@@ -1,6 +1,6 @@
 "use client"; // useStateを使うからuse clientを記載
 import React, { useState,useEffect } from "react";
-import DeckList from "./components/DeckList";
+import DeckList from "./components2/DeckList";
 
 const DeckForm = () => {
   const [deckName, setDeckName] = useState(""); // デッキ名
