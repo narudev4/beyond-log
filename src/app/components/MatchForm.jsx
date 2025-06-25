@@ -1,8 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from 'react'
 
 const MatchForm = () => {
-	return <Box sx={{ bgcolor: "grey.300", p: 2 }}>勝敗登録</Box>;
+	return <Typography sx={{ bgcolor: "grey.300", p: 2 }}>勝敗登録</Typography>;
 }
 
 export default MatchForm;

@@ -1,3 +1,5 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Button, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 const DeckPanel = () => {
@@ -101,11 +103,12 @@ const DeckPanel = () => {
 
   return (
     <div>
+			<Typography variant="h6" component="h2" sx={{ bgcolor: "grey.300", mb: 2}}>DECK</Typography>
       <form onSubmit={handleSubmit}>
         {/* formがsubmitしたときhandleSubmitを実行 */}
         <select value={selectDeckId || ""} onChange={handleDeckSelect}>
           {/* valueにdeckIdまたは"",ChangeしたときhandleDeckSelectを実行 */}
-          <option value="">デッキを選択</option>
+          <option value="">DECK</option>
           {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
           {deckList.map((d) => (
             <option key={d.id} value={d.id}>
@@ -125,7 +128,7 @@ const DeckPanel = () => {
         </label>
         {/* ChangeしたときdeckClassを更新 */}
         {/* valueにdeckClass */}
-				<select
+        <select
           name="selectClass"
           value={deckClass}
           onChange={(e) => setDeckClass(e.target.value)}
@@ -146,18 +149,26 @@ const DeckPanel = () => {
           value={deckName}
           onChange={(e) => setDeckName(e.target.value)}
         />
-        <button type="submit">新規登録</button>
+        <Stack direction="row" spacing={2}>
+          <Button variant="contained" type="submit">
+            新規登録
+          </Button>
           {/* submitしない場合はtype="button"にする clickしたときhandleUpdateを実行 */}
-        <button type="button" onClick={handleUpdate}>
-          上書き保存
-        </button>
-				{/* clickしたとき選択中のdeckIdのデッキに対してhandleDeleteを実行 deckIdがないと消せない 簡易バリデーション */}
-        <button
-          type="button"
-          onClick={() =>
-            handleDelete(selectDeckId)} disabled={!selectDeckId}>
-          削除
-        </button>
+          <Button variant="outlined" type="button" onClick={handleUpdate} disabled={!selectDeckId}>
+            上書き保存
+          </Button>
+          {/* clickしたとき選択中のdeckIdのデッキに対してhandleDeleteを実行 deckIdがないと消せない 簡易バリデーション */}
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            type="button"
+            onClick={() => handleDelete(selectDeckId)}
+            disabled={!selectDeckId}
+          >
+            削除
+          </Button>
+        </Stack>
       </form>
     </div>
   );
