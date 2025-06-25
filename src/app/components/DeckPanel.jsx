@@ -103,7 +103,7 @@ const DeckPanel = () => {
 
   return (
     <div>
-			<Typography variant="h6" component="h2" sx={{ bgcolor: "grey.300", mb: 2}}>DECK</Typography>
+			<Typography variant="h6" component="h2" sx={{ bgcolor: "grey.300", p: 2 }}>DECK</Typography>
       <form onSubmit={handleSubmit}>
         {/* formがsubmitしたときhandleSubmitを実行 */}
         <select value={selectDeckId || ""} onChange={handleDeckSelect}>
