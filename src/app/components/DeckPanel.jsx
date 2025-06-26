@@ -2,9 +2,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-const DeckPanel = () => {
+// propsとしてselectDeckIdとonSelectDeckを受け取る
+const DeckPanel = ({ selectDeckId, onSelectDeck }) => {
   const [deckList, setDeckList] = useState([]); // 作成したデッキを配列で状態管理
-  const [selectDeckId, setSelectDeckId] = useState(""); // 選択されたデッキのid
+  // const [selectDeckId, setSelectDeckId] = useState(""); // 選択されたデッキのid
   const [deckName, setDeckName] = useState(""); // デッキの名前
   const [deckImageUrl, setDeckImageUrl] = useState(null); // デッキの画像URL
   const [deckClass, setDeckClass] = useState(""); // デッキのクラス（エルフ・ロイヤルなど）
@@ -43,7 +44,7 @@ const DeckPanel = () => {
       class: deckClass,
     };
     setDeckList([...deckList, newDeck]); // 既存のdeckListにnewDeckを追加して新しい配列にする
-    setSelectDeckId(newDeck.id); // newDeck.idでセレクトされているデッキのidを更新
+    onSelectDeck(newDeck.id); // onSelectDeckで親の状態を更新（newDeck.idでセレクトされているデッキのidを更新）
   };
 
   // 画像が変わったときに画像を取得しURLに変換する関数
@@ -63,7 +64,7 @@ const DeckPanel = () => {
     const id = Number(e.target.value); // Number指定でidを取得
     const deck = deckList.find((d) => d.id === id); // 引数にdを渡してd.idがconst idと同じならデッキ内容をifで更新
     if (deck) {
-      setSelectDeckId(deck.id);
+      onSelectDeck(deck.id);
       setDeckName(deck.name);
       setDeckImageUrl(deck.deckImage);
       setDeckClass(deck.class);
@@ -98,7 +99,7 @@ const DeckPanel = () => {
     setDeckClass(""); // 初期化
     setDeckName(""); // 初期化
     setDeckImageUrl(null); // 初期化
-    setSelectDeckId(""); // 初期化
+    onSelectDeck(""); // 初期化
   };
 
   return (
