@@ -19,59 +19,66 @@ const MatchForm = () => {
   const [order, setOrder] = useState(""); // 先行・後攻
   const [result, setResult] = useState(""); // 勝利・敗北
   const [memo, setMemo] = useState(""); // メモ
-	const [winCount, setWinCount] = useState(0);
-	const [loseCount, setLoseCount] = useState(0);
-  const [error, setError] = useState({
-    // エラーメッセージ用の状態
-    selectedClass: false,
+	const [winCount, setWinCount] = useState(0); // 勝利数 WinRateGraphで表示予定
+	const [loseCount, setLoseCount] = useState(0);// 敗北数 WinRateGraphで表示予定
+  const [error, setError] = useState({ // エラーメッセージ用の状態
+    selectedClass: false, // 初期値は未選択(false = エラーなし)
     order: false,
     result: false,
   });
 
-	// ローカルストレージキーを決める
+	// ローカルストレージの保存キー
 	const STORAGE_KEY = "matchResult";
 
+	// 初回マウント時：ローカルストレージから対戦結果を取得し、勝敗数を集計
 	useEffect(() => {
 		const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 		calculateWinLose(data);
 	}, []);
 
-  // 関数
-	const calculateWinLose = (matchArray) => {
-		const wins = matchArray.filter((m) => m.result === "勝利").length;
-		const loses = matchArray.filter((m) => m.result === "敗北").length;
-		setWinCount(wins);
-		setLoseCount(loses);
+	// ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
+	const calculateWinLose = (matchArray) => { // 引数にmatchArrayを渡す
+		const wins = matchArray.filter((m) => m.result === "勝利").length; // m.resultの"勝利"のlengthを取り出す
+		const loses = matchArray.filter((m) => m.result === "敗北").length; // m.resultの"敗北"のlengthを取り出す
+		setWinCount(wins); // 勝利数を更新
+		setLoseCount(loses); // 敗北数を更新
 	}
 
+	// 対戦結果をローカルストレージに保存する関数
   const handleClick = () => {
+		 // エラー処理の関数
     const hasError = {
-      selectedClass: selectedClass === "",
+      selectedClass: selectedClass === "", // 空文字だとtrue（＝未選択）、選択されているとfalseになる
       order: order === "",
       result: result === "",
     };
-    setError(hasError);
+    setError(hasError); // エラー情報を更新
 
-    if (Object.values(hasError).some((v) => v)) return; // どれか１つでもtrueなら処理中断
+		// Object.values(hasError)で[true, true, false]のような配列を取り出す
+		//.some((v) => v)は１つでもtrueがあればtrueを返すメソッド
+		// 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
+    if (Object.values(hasError).some((v) => v)) return;
 
+		// matchDataオブジェクト
     const matchData = {
-			id: Date.now(),
-      selectedClass,
-      order,
-      result,
+			id: Date.now(), // 一意なid
+      selectedClass, // 選択されたクラス
+      order, // 先行・後攻
+      result, // 勝利・敗北
       memo,
     };
 
-		const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-		const updated = [...prev, matchData];
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+		const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
+		const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
 
-		// 入力値をリセット
+		// 結果登録後入力値をリセット
     setSelectedClass("");
     setOrder("");
     setResult("");
     setMemo("");
 
+		// 結果登録時に勝利数・敗北数を更新
 		calculateWinLose(updated);
   };
   return (
@@ -83,14 +90,18 @@ const MatchForm = () => {
       >
         勝敗登録
       </Typography>
+			{/* エラー確認のためにerror={error.selectedClass} */}
       <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
+				{/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
         <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
-        <Select
+        {/* クラスが変わったときselectedClassを更新 */}
+				<Select
           labelId="class-select-label"
           label="対戦したクラスを選択"
           value={selectedClass}
           onChange={(e) => setSelectedClass(e.target.value)}
         >
+					{/* MenuItemはHTMLの<option>のようなもの */}
           <MenuItem value="エルフ">エルフ</MenuItem>
           <MenuItem value="ロイヤル">ロイヤル</MenuItem>
           <MenuItem value="ウィッチ">ウィッチ</MenuItem>
@@ -101,11 +112,16 @@ const MatchForm = () => {
         </Select>
       </FormControl>
       <Box>
+				{/* rowで横並び
+				先行・後攻の状態
+				選択時setOrderを更新 */}
         <RadioGroup
           row
           value={order}
           onChange={(e) => setOrder(e.target.value)}
         >
+					{/* control={<Radio />}を指定するとラジオボタンになる
+					sx={}はerror.orderがtrue（＝未選択）なら文字を赤くする */}
           <FormControlLabel
             value="先行"
             control={<Radio />}
@@ -138,6 +154,7 @@ const MatchForm = () => {
           />
         </RadioGroup>
       </Box>
+			{/* 値が変わったときsetMemoを更新 */}
       <TextField
         label="メモ"
         variant="outlined"
