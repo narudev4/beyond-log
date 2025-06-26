@@ -39,8 +39,9 @@ const MatchForm = ({ selectDeckId }) => {
 
 	// ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
 	const calculateWinLose = (matchArray) => { // 引数にmatchArrayを渡す
-		const wins = matchArray.filter((m) => m.result === "勝利").length; // m.resultの"勝利"のlengthを取り出す
-		const loses = matchArray.filter((m) => m.result === "敗北").length; // m.resultの"敗北"のlengthを取り出す
+		const filtered = matchArray.filter((m) => m.deckId === selectDeckId) // selectDeckIdと同じdeckIdの結果を取り出す
+		const wins = filtered.filter((m) => m.result === "勝利").length; // 取り出した中から"勝利"のみを取り出す
+		const loses = filtered.filter((m) => m.result === "敗北").length; // 取り出した中から"敗北"のみを取り出す
 		setWinCount(wins); // 勝利数を更新
 		setLoseCount(loses); // 敗北数を更新
 	}
