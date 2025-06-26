@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import React, { useState,useEffect } from "react";
 
-const MatchForm = () => {
+const MatchForm = ({ selectDeckId }) => {
   // state
   const [selectedClass, setSelectedClass] = useState(""); // 対戦クラス
   const [order, setOrder] = useState(""); // 先行・後攻
@@ -25,6 +25,7 @@ const MatchForm = () => {
     selectedClass: false, // 初期値は未選択(false = エラーなし)
     order: false,
     result: false,
+		deck: false,
   });
 
 	// ローカルストレージの保存キー
@@ -51,6 +52,7 @@ const MatchForm = () => {
       selectedClass: selectedClass === "", // 空文字だとtrue（＝未選択）、選択されているとfalseになる
       order: order === "",
       result: result === "",
+			deck: selectDeckId === null,
     };
     setError(hasError); // エラー情報を更新
 
@@ -59,9 +61,10 @@ const MatchForm = () => {
 		// 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
     if (Object.values(hasError).some((v) => v)) return;
 
-		// matchDataオブジェクト
+		// 戦績データ
     const matchData = {
 			id: Date.now(), // 一意なid
+			deckId: selectDeckId,
       selectedClass, // 選択されたクラス
       order, // 先行・後攻
       result, // 勝利・敗北
