@@ -2,8 +2,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { Button, IconButton, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-// propsとしてselectDeckIdとonSelectDeckを受け取る
-const DeckPanel = ({ selectDeckId, onSelectDeck }) => {
+// propsとして受け取る
+const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
   const [deckList, setDeckList] = useState([]); // 作成したデッキを配列で状態管理
   // const [selectDeckId, setSelectDeckId] = useState(""); // 選択されたデッキのid
   const [deckName, setDeckName] = useState(""); // デッキの名前
@@ -65,6 +65,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck }) => {
     const deck = deckList.find((d) => d.id === id); // 引数にdを渡してd.idがconst idと同じならデッキ内容をifで更新
     if (deck) {
       onSelectDeck(deck.id);
+			onDeckChange(deck.id);
       setDeckName(deck.name);
       setDeckImageUrl(deck.deckImage);
       setDeckClass(deck.class);
@@ -100,6 +101,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck }) => {
     setDeckName(""); // 初期化
     setDeckImageUrl(null); // 初期化
     onSelectDeck(""); // 初期化
+		onDeckChange("");
   };
 
   return (

@@ -1,5 +1,5 @@
 "use client";
-import { Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import DeckPanel from "../components/DeckPanel";
 import WinRateGraph from "../components/WinRateGraph";
 import MatchForm from "../components/MatchForm";
@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 const STORAGE_KEY = "matchResult";
 
 export default function DashboardPage() {
-	const [matches, setMatches] = useState([]); // MatchFormから追加される対戦履歴一覧
-	const [selectDeckId, setSelectDeckId ] = useState(null); // DeckPanelからリフトアップ
+	const [matches, setMatches] = useState([]); // MatchFormから追加される対戦履歴一覧（全体の戦績）
+	const [selectDeckId, setSelectDeckId ] = useState(null); // 現在選択中のデッキid（DeckPanelからリフトアップ)
 
   // 初回マウント時にローカルストレージから保存済みの戦績を読み込む
 	useEffect(() => {
@@ -18,16 +18,38 @@ export default function DashboardPage() {
 		setMatches(savedMatches); // 再レンダリング時にもグラフが復元される
 	},[]);
 
+	// ローカルストレージから全体の戦績を取得してdeckIdを照らし合わせてsetMatchesで更新する
+	// propsとしてDeckPanelに関数をわたす
+	const handleDeckChange =(deckId) => {
+		const data = JSON.parse(localStorage.getItem("matchResult") || "[]");
+		const filtered = data.filter((m) => m.deckId === deckId);
+		setMatches(filtered)
+	}
   return (
 		<Grid container spacing={0.5}>
+			{/* デッキの選択・作成・削除するフォーム */}
 			{/* DeckPanelとMatchFormにpropsとしてselectDeckIdを渡す */}
-			<Grid size={4}><DeckPanel selectDeckId={selectDeckId} onSelectDeck={setSelectDeckId} /></Grid>
+			<Grid size={4}><DeckPanel selectDeckId={selectDeckId} onSelectDeck={setSelectDeckId} onDeckChange={handleDeckChange} /></Grid>
 
-			{/* MatchFormの登録内容を元に勝率グラフを更新 */}
-			<Grid size={4}><WinRateGraph matches={matches}/></Grid>
+			{/* グラフを表示するフォーム*/}
+			{/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
+			<Grid size={4}>
+			{selectDeckId ? (
+						<WinRateGraph matches={matches}/> ): (
+						<Box>
+							{/* １つ目のTypographyはコンポーネント化するかもしれない */}
+							<Typography
+											variant="h6"
+											component="h2"
+											sx={{ bgcolor: "grey.300", p: 2 }}>グラフ</Typography>
+										<Typography sx={{ p: 2}}>デッキを選択すると戦績が表示されます</Typography>
+						</Box>
+				)}
+			</Grid>
 
-			{/* 新しい戦績が追加されたらsetMatchesで追加する */}
-			<Grid size={4}><MatchForm selectDeckId={selectDeckId} onAddMatch={(prev) => setMatches([...prev, newMatch])} /></Grid>
+			{/* 戦績（matches）を新規登録するフォーム*/}
+			{/* selectDeckIdで選択中のデッキの戦績に限定できる */}
+			<Grid size={4}><MatchForm selectDeckId={selectDeckId} onAddMatch={(newMatch) => setMatches((prev) => [...prev, newMatch])} /></Grid>
 		</Grid>
   );
 }
