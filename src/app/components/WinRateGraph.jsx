@@ -28,16 +28,16 @@ const calculateWinRates = (matches) => {
   return [
     {
       name: "全体",
-      勝率: total === 0 ? 0 : Math.round((totalWins / total) * 100),
+      winRate: total === 0 ? 0 : Math.round((totalWins / total) * 100),
     },
     {
       name: "先行",
-      勝率:
+      winRate:
         first.length === 0 ? 0 : Math.round((firstWins / first.length) * 100),
     },
     {
       name: "後攻",
-      勝率: second.length === 0 ? 0 : Math.round((secondWins / second.length) * 100),
+      winRate: second.length === 0 ? 0 : Math.round((secondWins / second.length) * 100),
     },
   ];
 };
@@ -65,7 +65,7 @@ const WinRateGraph = ({ matches }) => {
             <YAxis unit="%"/>
             <Tooltip />
 						{/* dataKeyで表示する項目を指定("勝率")・fillで棒の色を設定 */}
-						<Bar dataKey="勝率" fill="#8884d8"/>
+						<Bar dataKey="winRate" fill="#8884d8"/>
           </BarChart>
         </ResponsiveContainer>
       </Box>

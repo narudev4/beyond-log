@@ -11,79 +11,86 @@ import {
   RadioGroup,
   Radio,
 } from "@mui/material";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-const MatchForm = ({ selectDeckId }) => {
+const MatchForm = ({ selectDeckId, onAddMatch }) => {
   // state
   const [selectedClass, setSelectedClass] = useState(""); // 対戦クラス
   const [order, setOrder] = useState(""); // 先行・後攻
   const [result, setResult] = useState(""); // 勝利・敗北
   const [memo, setMemo] = useState(""); // メモ
-	const [winCount, setWinCount] = useState(0); // 勝利数 WinRateGraphで表示予定
-	const [loseCount, setLoseCount] = useState(0);// 敗北数 WinRateGraphで表示予定
-  const [error, setError] = useState({ // エラーメッセージ用の状態
+  const [winCount, setWinCount] = useState(0); // 勝利数 WinRateGraphで表示予定
+  const [loseCount, setLoseCount] = useState(0); // 敗北数 WinRateGraphで表示予定
+  const [error, setError] = useState({
+    // エラーメッセージ用の状態
     selectedClass: false, // 初期値は未選択(false = エラーなし)
     order: false,
     result: false,
-		deck: false,
+    deck: false,
   });
 
-	// ローカルストレージの保存キー
-	const STORAGE_KEY = "matchResult";
+  // ローカルストレージの保存キー
+  const STORAGE_KEY = "matchResult";
 
-	// 初回マウント時：ローカルストレージから対戦結果を取得し、勝敗数を集計
-	useEffect(() => {
-		const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-		calculateWinLose(data);
-	}, []);
+  // 初回マウント時：ローカルストレージから対戦結果を取得し、勝敗数を集計
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    calculateWinLose(data);
+  }, []);
 
-	// ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
-	const calculateWinLose = (matchArray) => { // 引数にmatchArrayを渡す
-		const filtered = matchArray.filter((m) => m.deckId === selectDeckId) // selectDeckIdと同じdeckIdの結果を取り出す
-		const wins = filtered.filter((m) => m.result === "勝利").length; // 取り出した中から"勝利"のみを取り出す
-		const loses = filtered.filter((m) => m.result === "敗北").length; // 取り出した中から"敗北"のみを取り出す
-		setWinCount(wins); // 勝利数を更新
-		setLoseCount(loses); // 敗北数を更新
-	}
+  // ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
+  const calculateWinLose = (matchArray) => {
+    // 引数にmatchArrayを渡す
+    const filtered = matchArray.filter((m) => m.deckId === selectDeckId); // selectDeckIdと同じdeckIdの結果を取り出す
+    const wins = filtered.filter((m) => m.result === "勝利").length; // 取り出した中から"勝利"のみを取り出す
+    const loses = filtered.filter((m) => m.result === "敗北").length; // 取り出した中から"敗北"のみを取り出す
+    setWinCount(wins); // 勝利数を更新
+    setLoseCount(loses); // 敗北数を更新
+  };
 
-	// 対戦結果をローカルストレージに保存する関数
+  // 対戦結果をローカルストレージに保存する関数
   const handleClick = () => {
-		 // エラー処理の関数
+    // エラー処理の関数
     const hasError = {
       selectedClass: selectedClass === "", // 空文字だとtrue（＝未選択）、選択されているとfalseになる
       order: order === "",
       result: result === "",
-			deck: selectDeckId === null,
+      deck: selectDeckId === null,
     };
     setError(hasError); // エラー情報を更新
 
-		// Object.values(hasError)で[true, true, false]のような配列を取り出す
-		//.some((v) => v)は１つでもtrueがあればtrueを返すメソッド
-		// 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
+    // Object.values(hasError)で[true, true, false]のような配列を取り出す
+    //.some((v) => v)は１つでもtrueがあればtrueを返すメソッド
+    // 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
     if (Object.values(hasError).some((v) => v)) return;
 
-		// 戦績データ
+    // 戦績データ
     const matchData = {
-			id: Date.now(), // 一意なid
-			deckId: selectDeckId,
-      selectedClass, // 選択されたクラス
-      order, // 先行・後攻
-      result, // 勝利・敗北
+      id: Date.now().toString(), // 一意なid
+      deckId: selectDeckId,
+      opponentDeck: selectedClass, // 選択されたクラス
+      wentFirst: order === "先行", // 先行と後攻をtrue or falseで管理
+      result: result === "勝利" ? "win" : "lose" , // 勝利・敗北を内部用にwin・loseに変換
       memo,
+			date: new Date().toISOString().slice(0,10), // ISO形式の日付部分だけをsliceで抜き出し
     };
 
-		const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
-		const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
+    const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
+    const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
 
-		// 結果登録後入力値をリセット
+		// onAddMatchが関数型であれば親へ通知する
+		if(typeof onAddMatch === "function"){
+			onAddMatch(matchData);
+		}
+
+    // 結果登録後入力値をリセット
     setSelectedClass("");
     setOrder("");
     setResult("");
     setMemo("");
-
-		// 結果登録時に勝利数・敗北数を更新
-		calculateWinLose(updated);
+    // 結果登録時に勝利数・敗北数を更新
+    calculateWinLose(updated);
   };
   return (
     <Box component="section">
@@ -94,18 +101,18 @@ const MatchForm = ({ selectDeckId }) => {
       >
         勝敗登録
       </Typography>
-			{/* エラー確認のためにerror={error.selectedClass} */}
+      {/* エラー確認のためにerror={error.selectedClass} */}
       <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
-				{/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
+        {/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
         <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
         {/* クラスが変わったときselectedClassを更新 */}
-				<Select
+        <Select
           labelId="class-select-label"
           label="対戦したクラスを選択"
           value={selectedClass}
           onChange={(e) => setSelectedClass(e.target.value)}
         >
-					{/* MenuItemはHTMLの<option>のようなもの */}
+          {/* MenuItemはHTMLの<option>のようなもの */}
           <MenuItem value="エルフ">エルフ</MenuItem>
           <MenuItem value="ロイヤル">ロイヤル</MenuItem>
           <MenuItem value="ウィッチ">ウィッチ</MenuItem>
@@ -116,7 +123,7 @@ const MatchForm = ({ selectDeckId }) => {
         </Select>
       </FormControl>
       <Box>
-				{/* rowで横並び
+        {/* rowで横並び
 				先行・後攻の状態
 				選択時setOrderを更新 */}
         <RadioGroup
@@ -124,7 +131,7 @@ const MatchForm = ({ selectDeckId }) => {
           value={order}
           onChange={(e) => setOrder(e.target.value)}
         >
-					{/* control={<Radio />}を指定するとラジオボタンになる
+          {/* control={<Radio />}を指定するとラジオボタンになる
 					sx={}はerror.orderがtrue（＝未選択）なら文字を赤くする */}
           <FormControlLabel
             value="先行"
@@ -158,7 +165,7 @@ const MatchForm = ({ selectDeckId }) => {
           />
         </RadioGroup>
       </Box>
-			{/* 値が変わったときsetMemoを更新 */}
+      {/* 値が変わったときsetMemoを更新 */}
       <TextField
         label="メモ"
         variant="outlined"
@@ -169,10 +176,10 @@ const MatchForm = ({ selectDeckId }) => {
       <Button variant="contained" sx={{ p: 1, m: 2 }} onClick={handleClick}>
         結果登録
       </Button>
-			<Box sx={{ m:2 }}>
-				<Typography>勝利数：{winCount}</Typography>
-				<Typography>敗北数：{loseCount}</Typography>
-			</Box>
+      <Box sx={{ m: 2 }}>
+        <Typography>勝利数：{winCount}</Typography>
+        <Typography>敗北数：{loseCount}</Typography>
+      </Box>
     </Box>
   );
 };
