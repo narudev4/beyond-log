@@ -32,18 +32,18 @@ const MatchForm = ({ selectDeckId, onAddMatch }) => {
   // ローカルストレージの保存キー
   const STORAGE_KEY = "matchResult";
 
-  // 初回マウント時：ローカルストレージから対戦結果を取得し、勝敗数を集計
+  // デッキ選択時：ローカルストレージから対戦結果を取得し、勝敗数を集計
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     calculateWinLose(data);
-  }, []);
+  }, [selectDeckId]);
 
   // ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
   const calculateWinLose = (matchArray) => {
     // 引数にmatchArrayを渡す
     const filtered = matchArray.filter((m) => m.deckId === selectDeckId); // selectDeckIdと同じdeckIdの結果を取り出す
-    const wins = filtered.filter((m) => m.result === "勝利").length; // 取り出した中から"勝利"のみを取り出す
-    const loses = filtered.filter((m) => m.result === "敗北").length; // 取り出した中から"敗北"のみを取り出す
+    const wins = filtered.filter((m) => m.result === "win").length; // 取り出した中から"勝利"のみを取り出す
+    const loses = filtered.filter((m) => m.result === "lose").length; // 取り出した中から"敗北"のみを取り出す
     setWinCount(wins); // 勝利数を更新
     setLoseCount(loses); // 敗北数を更新
   };
