@@ -16,8 +16,8 @@ export default function RootLayout({ children }) {
         <Box sx={{ pb: "64px" }}>
           <Header />
           {children}
-        </Box>
           <Footer />
+        </Box>
       </body>
     </html>
   );
