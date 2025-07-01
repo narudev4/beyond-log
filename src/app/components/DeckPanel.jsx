@@ -1,5 +1,16 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Typography,
+  Select,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 // propsとして受け取る
@@ -65,7 +76,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
     const deck = deckList.find((d) => d.id === id); // 引数にdを渡してd.idがconst idと同じならデッキ内容をifで更新
     if (deck) {
       onSelectDeck(deck.id);
-			onDeckChange(deck.id);
+      onDeckChange(deck.id);
       setDeckName(deck.name);
       setDeckImageUrl(deck.deckImage);
       setDeckClass(deck.class);
@@ -101,63 +112,95 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
     setDeckName(""); // 初期化
     setDeckImageUrl(null); // 初期化
     onSelectDeck(""); // 初期化
-		onDeckChange("");
+    onDeckChange("");
   };
 
   return (
-    <div>
-			<Typography variant="h6" component="h2" sx={{ bgcolor: "grey.300", p: 2 }}>DECK</Typography>
-      <form onSubmit={handleSubmit}>
+    <Box>
+      <Typography
+        variant="h6"
+        component="h2"
+        sx={{ bgcolor: "grey.300", p: 2, mb: 2 }}
+      >
+        DECK
+      </Typography>
+			<form onSubmit={handleSubmit}>
+      <FormControl sx={{ width: 300, m: 1 }}>
+        <InputLabel id="deck-select-label">デッキを選択</InputLabel>
         {/* formがsubmitしたときhandleSubmitを実行 */}
-        <select value={selectDeckId || ""} onChange={handleDeckSelect}>
+        <Select
+          value={selectDeckId || ""}
+          onChange={handleDeckSelect}
+          labelId="deck-select-label"
+          label="デッキを選択"
+        >
           {/* valueにdeckIdまたは"",ChangeしたときhandleDeckSelectを実行 */}
-          <option value="">DECK</option>
           {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
           {deckList.map((d) => (
-            <option key={d.id} value={d.id}>
+            <MenuItem key={d.id} value={d.id}>
               {d.name}
-            </option>
+            </MenuItem>
           ))}
-        </select>
-        <label>
+        </Select>
+        </FormControl>
+
+        <Box sx={{ my: 2 }}>
           {/* deckImageUrlがあれば画像を表示、なければ<p>を表示 */}
           {deckImageUrl ? (
-            <img src={deckImageUrl} alt="デッキ画像" />
+            <img src={deckImageUrl} alt="デッキ画像" style={{maxWidth: "100%", maxHeight: 150 }}/>
           ) : (
-            <p>デッキ画像を選択：</p>
+            <Typography>デッキ画像を選択：</Typography>
           )}
           <input type="file" accept="image/*" onChange={handleImageChange} />{" "}
           {/* accept="image/*"で画像のみ選択可能、ChangeしたときhandleImageChangeを実行 */}
-        </label>
+        </Box>
+
         {/* ChangeしたときdeckClassを更新 */}
         {/* valueにdeckClass */}
-        <select
-          name="selectClass"
-          value={deckClass}
-          onChange={(e) => setDeckClass(e.target.value)}
-        >
-          <option value="">--クラスを選択--</option>
-          <option value="エルフ">エルフ</option>
-          <option value="ロイヤル">ロイヤル</option>
-          <option value="ウィッチ">ウィッチ</option>
-          <option value="ドラゴン">ドラゴン</option>
-          <option value="ナイトメア">ナイトメア</option>
-          <option value="ビショップ">ビショップ</option>
-          <option value="ネメシス">ネメシス</option>
-        </select>
-        {/* valueにdeckName ChangeしたときdeckNameを更新*/}
-        <input
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="class-select-label">クラスを選択</InputLabel>
+            <Select
+              labelId="class-select-label"
+              label="クラスを選択"
+              name="selectClass"
+              value={deckClass}
+              onChange={(e) => setDeckClass(e.target.value)}
+            >
+              <MenuItem value="エルフ">エルフ</MenuItem>
+              <MenuItem value="ロイヤル">ロイヤル</MenuItem>
+              <MenuItem value="ウィッチ">ウィッチ</MenuItem>
+              <MenuItem value="ドラゴン">ドラゴン</MenuItem>
+              <MenuItem value="ナイトメア">ナイトメア</MenuItem>
+              <MenuItem value="ビショップ">ビショップ</MenuItem>
+              <MenuItem value="ネメシス">ネメシス</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* valueにdeckName ChangeしたときdeckNameを更新*/}
+          <TextField
+            label="デッキ名を入力"
+            value={deckName}
+            onChange={(e) => setDeckName(e.target.value)}
+						sx={{ mb:2 }}
+						/>
+
+        {/* <input
           type="text"
           placeholder="デッキ名を入力"
           value={deckName}
           onChange={(e) => setDeckName(e.target.value)}
-        />
+        /> */}
         <Stack direction="row" spacing={2}>
           <Button variant="contained" type="submit">
             新規登録
           </Button>
           {/* submitしない場合はtype="button"にする clickしたときhandleUpdateを実行 */}
-          <Button variant="outlined" type="button" onClick={handleUpdate} disabled={!selectDeckId}>
+          <Button
+            variant="outlined"
+            type="button"
+            onClick={handleUpdate}
+            disabled={!selectDeckId}
+          >
             上書き保存
           </Button>
           {/* clickしたとき選択中のdeckIdのデッキに対してhandleDeleteを実行 deckIdがないと消せない 簡易バリデーション */}
@@ -172,8 +215,8 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
             削除
           </Button>
         </Stack>
-      </form>
-    </div>
+			</form>
+    </Box>
   );
 };
 
