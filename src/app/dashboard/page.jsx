@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
 			{/* グラフを表示するフォーム*/}
 			{/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
-			<Grid size={4}>
+			<Grid item xs={12} md={4}>
 			{selectDeckId ? (
 						<WinRateGraph matches={matches}/> ): (
 						<Box>

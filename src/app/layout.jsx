@@ -13,11 +13,11 @@ export default function RootLayout({ children }) {
     <html lang="ja">
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <body>
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ pb: "64px" }}>
           <Header />
           {children}
-          <Footer />
         </Box>
+          <Footer />
       </body>
     </html>
   );
