@@ -89,7 +89,7 @@ const WinRateGraph = ({ matches }) => {
       </Typography>
       <Box sx={{ width: "100%", height: 300 }}>
         {/* ResponsiveContainer：親要素に高さを必ず含める */}
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           {/* BarChart：dataを渡すとグラフが描画される */}
           <BarChart data={barData}>
             {/* 横軸に全体・先行・後攻の名前を表示 */}
