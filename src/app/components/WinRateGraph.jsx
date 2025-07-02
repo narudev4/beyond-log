@@ -59,7 +59,8 @@ const getOpponentClassDistribution = (matches) => {
   // countMapオブジェクト（{ "エルフ": 3, "ロイヤル": 2, ... }）を
   // RechartsのPieChartが受け取れる形式（[{ name: "エルフ", value: 3 }, ...]）に変換
   return Object.entries(countMap) // [["エルフ", 3], ["ロイヤル", 2], ...]
-    .map(([name, value]) => ({ name, value })); // Recharts用のオブジェクト形式に変換
+    .map(([name, value]) => ({ name, value })) // Recharts用のオブジェクト形式に変換
+		.sort((a,b) => b.value - a.value); // value(対戦数)が大きい順にソートする
 };
 
 // 円グラフ用の色の配列
@@ -125,7 +126,10 @@ const WinRateGraph = ({ matches }) => {
                 cy="50%"
                 outerRadius={80}
                 fill="#8884d8"
-                label
+								startAngle={90}
+								endAngle={-270}
+								labelLine={false}
+								label={({ percent, x, y, index }) => `${(percent * 100).toFixed(0)}%`}  // ← 小数第0位で%表示
               >
                 {/* 各クラスごとにセクションを生成 */}
                 {/* Cellで個別の色を設定 */}
