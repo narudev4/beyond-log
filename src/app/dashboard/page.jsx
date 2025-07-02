@@ -4,6 +4,7 @@ import DeckPanel from "../components/DeckPanel";
 import WinRateGraph from "../components/WinRateGraph";
 import MatchForm from "../components/MatchForm";
 import { useEffect, useState } from "react";
+import MatchHistory from "../components/MatchHistory";
 
 // ローカルストレージに保存する際のキー（MatchFormと統一）
 const STORAGE_KEY = "matchResult";
@@ -24,19 +25,18 @@ export default function DashboardPage() {
     const data = JSON.parse(localStorage.getItem("matchResult") || "[]");
     const filtered = data.filter((m) => m.deckId === deckId);
     setMatches(filtered);
-
   };
-	const handleResetMatches = (deckId) => {
-		const allMatches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-		const filtered =allMatches.filter((m) => m.deckId !== deckId);
-		localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-		setMatches([]);
-	};
+  const handleResetMatches = (deckId) => {
+    const allMatches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const filtered = allMatches.filter((m) => m.deckId !== deckId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    setMatches([]);
+  };
   return (
-    <Grid container columns={12} sx={{ width:"100%" }} spacing={0.5}>
+    <Grid container columns={12} sx={{ width: "100%" }} spacing={0.5}>
       {/* デッキの選択・作成・削除するフォーム */}
       {/* DeckPanelとMatchFormにpropsとしてselectDeckIdを渡す */}
-      <Grid size={{ xs: 12, sm: 6, md:4 }}>
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <DeckPanel
           selectDeckId={selectDeckId}
           onSelectDeck={setSelectDeckId}
@@ -44,9 +44,22 @@ export default function DashboardPage() {
         />
       </Grid>
 
+      {/* 戦績（matches）を新規登録するフォーム*/}
+      {/* selectDeckIdで選択中のデッキの戦績に限定できる */}
+      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+        <MatchForm
+          selectDeckId={selectDeckId}
+          onAddMatch={(newMatch) => setMatches((prev) => [...prev, newMatch])}
+          onResetMatches={handleResetMatches}
+        />
+      </Grid>
+
+      <Grid size={{ md:4}}>
+        <MatchHistory matches={matches} selectDeckId={selectDeckId}/>
+      </Grid>
       {/* グラフを表示するフォーム*/}
       {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
-      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
         {selectDeckId ? (
           <WinRateGraph matches={matches} />
         ) : (
@@ -64,16 +77,6 @@ export default function DashboardPage() {
             </Typography>
           </Box>
         )}
-      </Grid>
-
-      {/* 戦績（matches）を新規登録するフォーム*/}
-      {/* selectDeckIdで選択中のデッキの戦績に限定できる */}
-      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-        <MatchForm
-          selectDeckId={selectDeckId}
-          onAddMatch={(newMatch) => setMatches((prev) => [...prev, newMatch])}
-					onResetMatches={handleResetMatches}
-        />
       </Grid>
     </Grid>
   );

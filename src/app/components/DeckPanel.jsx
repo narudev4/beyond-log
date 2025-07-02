@@ -123,7 +123,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       <Typography
         variant="h6"
         component="h2"
-        sx={{ bgcolor: "grey.300", p: 2, mb: 2 }}
+        sx={{ bgcolor: "grey.300", p: 1, mb: 2 }}
       >
         DECK
       </Typography>
@@ -142,7 +142,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
               {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
               {deckList.map((d) => (
                 <MenuItem key={d.id} value={d.id}>
-                  {d.name}
+                  {d.name}{" - "}{d.class}
                 </MenuItem>
               ))}
             </Select>

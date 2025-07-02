@@ -98,7 +98,7 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
       <Typography
         variant="h6"
         component="h2"
-        sx={{ bgcolor: "grey.300", p: 2, mb: 2 }}
+        sx={{ bgcolor: "grey.300", p: 1, mb: 2 }}
       >
         勝敗登録
       </Typography>
@@ -200,10 +200,10 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
           </Button>
         </Stack>
       </Box>
-      <Box sx={{ m: 2 }}>
+      {/* <Box sx={{ m: 2 }}>
         <Typography>勝利数：{winCount}</Typography>
         <Typography>敗北数：{loseCount}</Typography>
-      </Box>
+      </Box> */}
     </Box>
   );
 };

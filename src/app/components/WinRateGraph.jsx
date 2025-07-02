@@ -83,7 +83,7 @@ const WinRateGraph = ({ matches }) => {
       <Typography
         variant="h6"
         component="h2"
-        sx={{ bgcolor: "grey.300", p: 2 }}
+        sx={{ bgcolor: "grey.300", p: 1 }}
       >
         グラフ
       </Typography>
