@@ -94,7 +94,7 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
     calculateWinLose(updated);
   };
   return (
-    <Box>
+    <Box component="section">
       <Typography
         variant="h6"
         component="h2"
@@ -103,7 +103,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
         勝敗登録
       </Typography>
       <Box
-        component="section"
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
         {/* エラー確認のためにerror={error.selectedClass} */}

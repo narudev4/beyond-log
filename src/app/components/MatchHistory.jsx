@@ -1,14 +1,13 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 
 // props：全対戦データ(matches)・選択中のデッキId（selectDeckId）
 const MatchHistory = ({ matches, selectDeckId }) => {
 	// 選択中のデッキIdに一致するデッキの戦績だけを抽出する
   const filteredMatches = matches.filter(
-    (match) => match.deckId === selectDeckId
-  );
+    (match) => match.deckId === selectDeckId).reverse();
 
   return (
-    <Box>
+    <Box component="section" sx={{ width:"100%" }}>
       <Typography
         variant="h6"
         component="h2"
@@ -16,13 +15,14 @@ const MatchHistory = ({ matches, selectDeckId }) => {
       >
         対戦履歴
       </Typography>
-      <Box
+      <Grid
         sx={{
           height: "calc(100vh - 160px)", // ヘッダーなどの上の高さを差し引く
           overflowY: "auto", // 縦スクロールを有効にする
           p: 2,
           bgcolor: "grey.50",
           maxHeight: "350px",
+					width:"100%"
         }}
       >
         {/*デッキ未選択："デッキを選択すると戦績が表示されます"を表示
@@ -58,7 +58,7 @@ const MatchHistory = ({ matches, selectDeckId }) => {
             </Box>
           ))
         )}
-      </Box>
+      </Grid>
     </Box>
   );
 };

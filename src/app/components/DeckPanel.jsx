@@ -119,7 +119,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
   };
 
   return (
-    <Box>
+    <Box component="section">
       <Typography
         variant="h6"
         component="h2"

@@ -54,12 +54,12 @@ export default function DashboardPage() {
         />
       </Grid>
 
-      <Grid size={{ md:4}}>
+      <Grid size={{ xs: 12, sm: 12, md:4}}>
         <MatchHistory matches={matches} selectDeckId={selectDeckId}/>
       </Grid>
       {/* グラフを表示するフォーム*/}
       {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
-      <Grid size={{ xs: 12, sm: 6, md: 12 }}>
+      <Grid size={{ xs: 12, sm: 12, md: 12 }}>
         {selectDeckId ? (
           <WinRateGraph matches={matches} />
         ) : (
