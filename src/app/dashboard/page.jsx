@@ -24,7 +24,14 @@ export default function DashboardPage() {
     const data = JSON.parse(localStorage.getItem("matchResult") || "[]");
     const filtered = data.filter((m) => m.deckId === deckId);
     setMatches(filtered);
+
   };
+	const handleResetMatches = (deckId) => {
+		const allMatches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+		const filtered =allMatches.filter((m) => m.deckId !== deckId);
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+		setMatches([]);
+	};
   return (
     <Grid container columns={12} sx={{ width:"100%" }} spacing={0.5}>
       {/* デッキの選択・作成・削除するフォーム */}
@@ -65,6 +72,7 @@ export default function DashboardPage() {
         <MatchForm
           selectDeckId={selectDeckId}
           onAddMatch={(newMatch) => setMatches((prev) => [...prev, newMatch])}
+					onResetMatches={handleResetMatches}
         />
       </Grid>
     </Grid>

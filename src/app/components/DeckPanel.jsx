@@ -106,13 +106,16 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
 
   // デッキ削除の関数
   const handleDelete = (id) => {
-    // 引数にidを渡す
-    setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
-    setDeckClass(""); // 初期化
-    setDeckName(""); // 初期化
-    // setDeckImageUrl(null); // 初期化
-    onSelectDeck(""); // 初期化
-    onDeckChange("");
+		const confirmDelete = window.confirm("このデッキを削除しますか？");
+		if(confirmDelete) {
+			// 引数にidを渡す
+			setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
+			setDeckClass(""); // 初期化
+			setDeckName(""); // 初期化
+			// setDeckImageUrl(null); // 初期化
+			onSelectDeck(""); // 初期化
+			onDeckChange("");
+		}
   };
 
   return (

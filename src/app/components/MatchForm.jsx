@@ -10,10 +10,11 @@ import {
   FormControlLabel,
   RadioGroup,
   Radio,
+  Stack,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 
-const MatchForm = ({ selectDeckId, onAddMatch }) => {
+const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
   // state
   const [selectedClass, setSelectedClass] = useState(""); // 対戦クラス
   const [order, setOrder] = useState(""); // 先行・後攻
@@ -70,19 +71,19 @@ const MatchForm = ({ selectDeckId, onAddMatch }) => {
       deckId: selectDeckId,
       opponentDeck: selectedClass, // 選択されたクラス
       wentFirst: order === "先行", // 先行と後攻をtrue or falseで管理
-      result: result === "勝利" ? "win" : "lose" , // 勝利・敗北を内部用にwin・loseに変換
+      result: result === "勝利" ? "win" : "lose", // 勝利・敗北を内部用にwin・loseに変換
       memo,
-			date: new Date().toISOString().slice(0,10), // ISO形式の日付部分だけをsliceで抜き出し
+      date: new Date().toISOString().slice(0, 10), // ISO形式の日付部分だけをsliceで抜き出し
     };
 
     const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
     const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
 
-		// onAddMatchが関数型であれば親へ通知する
-		if(typeof onAddMatch === "function"){
-			onAddMatch(matchData);
-		}
+    // onAddMatchが関数型であれば親へ通知する
+    if (typeof onAddMatch === "function") {
+      onAddMatch(matchData);
+    }
 
     // 結果登録後入力値をリセット
     setSelectedClass("");
@@ -93,7 +94,7 @@ const MatchForm = ({ selectDeckId, onAddMatch }) => {
     calculateWinLose(updated);
   };
   return (
-    <Box component="section">
+    <Box>
       <Typography
         variant="h6"
         component="h2"
@@ -101,81 +102,104 @@ const MatchForm = ({ selectDeckId, onAddMatch }) => {
       >
         勝敗登録
       </Typography>
-      {/* エラー確認のためにerror={error.selectedClass} */}
-      <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
-        {/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
-        <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
-        {/* クラスが変わったときselectedClassを更新 */}
-        <Select
-          labelId="class-select-label"
-          label="対戦したクラスを選択"
-          value={selectedClass}
-          onChange={(e) => setSelectedClass(e.target.value)}
-        >
-          {/* MenuItemはHTMLの<option>のようなもの */}
-          <MenuItem value="エルフ">エルフ</MenuItem>
-          <MenuItem value="ロイヤル">ロイヤル</MenuItem>
-          <MenuItem value="ウィッチ">ウィッチ</MenuItem>
-          <MenuItem value="ドラゴン">ドラゴン</MenuItem>
-          <MenuItem value="ナイトメア">ナイトメア</MenuItem>
-          <MenuItem value="ビショップ">ビショップ</MenuItem>
-          <MenuItem value="ネメシス">ネメシス</MenuItem>
-        </Select>
-      </FormControl>
-      <Box>
-        {/* rowで横並び
+      <Box
+        component="section"
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      >
+        {/* エラー確認のためにerror={error.selectedClass} */}
+        <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
+          {/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
+          <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
+          {/* クラスが変わったときselectedClassを更新 */}
+          <Select
+            labelId="class-select-label"
+            label="対戦したクラスを選択"
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+          >
+            {/* MenuItemはHTMLの<option>のようなもの */}
+            <MenuItem value="エルフ">エルフ</MenuItem>
+            <MenuItem value="ロイヤル">ロイヤル</MenuItem>
+            <MenuItem value="ウィッチ">ウィッチ</MenuItem>
+            <MenuItem value="ドラゴン">ドラゴン</MenuItem>
+            <MenuItem value="ナイトメア">ナイトメア</MenuItem>
+            <MenuItem value="ビショップ">ビショップ</MenuItem>
+            <MenuItem value="ネメシス">ネメシス</MenuItem>
+          </Select>
+        </FormControl>
+        <Box>
+          {/* rowで横並び
 				先行・後攻の状態
 				選択時setOrderを更新 */}
-        <RadioGroup
-          row
-          value={order}
-          onChange={(e) => setOrder(e.target.value)}
-        >
-          {/* control={<Radio />}を指定するとラジオボタンになる
+          <RadioGroup
+            row
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+          >
+            {/* control={<Radio />}を指定するとラジオボタンになる
 					sx={}はerror.orderがtrue（＝未選択）なら文字を赤くする */}
-          <FormControlLabel
-            value="先行"
-            control={<Radio />}
-            label="先行"
-            sx={error.order ? { color: "red" } : {}}
-          />
-          <FormControlLabel
-            value="後攻"
-            control={<Radio />}
-            label="後攻"
-            sx={error.order ? { color: "red" } : {}}
-          />
-        </RadioGroup>
-        <RadioGroup
-          row
-          value={result}
-          onChange={(e) => setResult(e.target.value)}
-        >
-          <FormControlLabel
-            value="勝利"
-            control={<Radio />}
-            label="勝利"
-            sx={error.result ? { color: "red" } : {}}
-          />
-          <FormControlLabel
-            value="敗北"
-            control={<Radio />}
-            label="敗北"
-            sx={error.result ? { color: "red" } : {}}
-          />
-        </RadioGroup>
+            <FormControlLabel
+              value="先行"
+              control={<Radio />}
+              label="先行"
+              sx={error.order ? { color: "red" } : {}}
+            />
+            <FormControlLabel
+              value="後攻"
+              control={<Radio />}
+              label="後攻"
+              sx={error.order ? { color: "red" } : {}}
+            />
+          </RadioGroup>
+          <RadioGroup
+            row
+            value={result}
+            onChange={(e) => setResult(e.target.value)}
+          >
+            <FormControlLabel
+              value="勝利"
+              control={<Radio />}
+              label="勝利"
+              sx={error.result ? { color: "red" } : {}}
+            />
+            <FormControlLabel
+              value="敗北"
+              control={<Radio />}
+              label="敗北"
+              sx={error.result ? { color: "red" } : {}}
+            />
+          </RadioGroup>
+        </Box>
+        {/* 値が変わったときsetMemoを更新 */}
+        <TextField
+          label="メモ"
+          variant="outlined"
+          sx={{ m: 1 }}
+          value={memo}
+          onChange={(e) => setMemo(e.target.value)}
+        />
+        <Stack direction="row" spacing={2} sx={{ m: 1 }}>
+          <Button variant="contained" sx={{ p: 1, m: 2 }} onClick={handleClick}>
+            結果登録
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ p: 1, m: 2 }}
+            onClick={() => {
+							if(!selectDeckId) {
+								alert("デッキを選択してください");
+								return;
+							}
+							const confirmReset = window.confirm("このデッキの戦績をリセットしますか？");
+							if(confirmReset) {
+								onResetMatches(selectDeckId);
+							}
+						}}
+          >
+            戦績をリセット
+          </Button>
+        </Stack>
       </Box>
-      {/* 値が変わったときsetMemoを更新 */}
-      <TextField
-        label="メモ"
-        variant="outlined"
-        sx={{ m: 1 }}
-        value={memo}
-        onChange={(e) => setMemo(e.target.value)}
-      />
-      <Button variant="contained" sx={{ p: 1, m: 2 }} onClick={handleClick}>
-        結果登録
-      </Button>
       <Box sx={{ m: 2 }}>
         <Typography>勝利数：{winCount}</Typography>
         <Typography>敗北数：{loseCount}</Typography>
