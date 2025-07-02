@@ -18,7 +18,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
   const [deckList, setDeckList] = useState([]); // 作成したデッキを配列で状態管理
   // const [selectDeckId, setSelectDeckId] = useState(""); // 選択されたデッキのid
   const [deckName, setDeckName] = useState(""); // デッキの名前
-  const [deckImageUrl, setDeckImageUrl] = useState(null); // デッキの画像URL
+  // const [deckImageUrl, setDeckImageUrl] = useState(null); // デッキの画像URL
   const [deckClass, setDeckClass] = useState(""); // デッキのクラス（エルフ・ロイヤルなど）
 
   // 初回マウント時ローカルに保存されたデッキリストがあればdeckListを更新する
@@ -51,24 +51,24 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       // id,name,deckImage,classをnewDeckオブジェクトでデッキを保存する
       id: Date.now(),
       name: deckName,
-      deckImage: deckImageUrl,
+      // deckImage: deckImageUrl,
       class: deckClass,
     };
     setDeckList([...deckList, newDeck]); // 既存のdeckListにnewDeckを追加して新しい配列にする
     onSelectDeck(newDeck.id); // onSelectDeckで親の状態を更新（newDeck.idでセレクトされているデッキのidを更新）
   };
 
-  // 画像が変わったときに画像を取得しURLに変換する関数
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]; // e.target.files[0]で画像を取得
-    if (!file) return; // 画像がなければリターン
-    const reader = new FileReader(); // inputのファイルにアクセス
-    reader.onloadend = () => {
-      //readerのリロード完了時実行
-      setDeckImageUrl(reader.result); // deckImageUrlを更新(reader.result)で画像URL
-    };
-    reader.readAsDataURL(file); // fileをURLに変換
-  };
+  //  画像が変わったときに画像を取得しURLに変換する関数
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0]; // e.target.files[0]で画像を取得
+  //   if (!file) return; // 画像がなければリターン
+  //   const reader = new FileReader(); // inputのファイルにアクセス
+  //   reader.onloadend = () => {
+  //     //readerのリロード完了時実行
+  //     setDeckImageUrl(reader.result); // deckImageUrlを更新(reader.result)で画像URL
+  //   };
+  //   reader.readAsDataURL(file); // fileをURLに変換
+  // };
 
   // selectで選択されたデッキIDを元にdeckListからデッキを呼び出して状態に反映する関数
   const handleDeckSelect = (e) => {
@@ -78,7 +78,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       onSelectDeck(deck.id);
       onDeckChange(deck.id);
       setDeckName(deck.name);
-      setDeckImageUrl(deck.deckImage);
+      // setDeckImageUrl(deck.deckImage);
       setDeckClass(deck.class);
     }
   };
@@ -96,7 +96,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
           ? {
               ...d, // 元のデッキ情報を展開
               name: deckName, //入力中の情報に上書き
-              deckImage: deckImageUrl,
+              // deckImage: deckImageUrl,
               class: deckClass,
             }
           : d // 他のデッキはそのまま
@@ -110,7 +110,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
     setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
     setDeckClass(""); // 初期化
     setDeckName(""); // 初期化
-    setDeckImageUrl(null); // 初期化
+    // setDeckImageUrl(null); // 初期化
     onSelectDeck(""); // 初期化
     onDeckChange("");
   };
@@ -124,40 +124,41 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       >
         DECK
       </Typography>
-			<form onSubmit={handleSubmit}>
-      <FormControl sx={{ width: 300, m: 1 }}>
-        <InputLabel id="deck-select-label">デッキを選択</InputLabel>
-        {/* formがsubmitしたときhandleSubmitを実行 */}
-        <Select
-          value={selectDeckId || ""}
-          onChange={handleDeckSelect}
-          labelId="deck-select-label"
-          label="デッキを選択"
-        >
-          {/* valueにdeckIdまたは"",ChangeしたときhandleDeckSelectを実行 */}
-          {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
-          {deckList.map((d) => (
-            <MenuItem key={d.id} value={d.id}>
-              {d.name}
-            </MenuItem>
-          ))}
-        </Select>
-        </FormControl>
+      <Box  sx={{ display: "flex", flexDirection: "column", alignItems: "center", px:2}}>
+        <form onSubmit={handleSubmit}>
+          <FormControl sx={{ width: 300, m: 1 }}>
+            <InputLabel id="deck-select-label">デッキを選択</InputLabel>
+            {/* formがsubmitしたときhandleSubmitを実行 */}
+            <Select
+              value={selectDeckId || ""}
+              onChange={handleDeckSelect}
+              labelId="deck-select-label"
+              label="デッキを選択"
+            >
+              {/* valueにdeckIdまたは"",ChangeしたときhandleDeckSelectを実行 */}
+              {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
+              {deckList.map((d) => (
+                <MenuItem key={d.id} value={d.id}>
+                  {d.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-        <Box sx={{ my: 2 }}>
+          {/* <Box sx={{ my: 2 }}>
           {/* deckImageUrlがあれば画像を表示、なければ<p>を表示 */}
-          {deckImageUrl ? (
+          {/* {deckImageUrl ? (
             <img src={deckImageUrl} alt="デッキ画像" style={{maxWidth: "100%", maxHeight: 150 }}/>
-          ) : (
-            <Typography>デッキ画像を選択：</Typography>
-          )}
-          <input type="file" accept="image/*" onChange={handleImageChange} />{" "}
+						) : (
+							<Typography>デッキ画像を選択：</Typography>
+							)}
+							<input type="file" accept="image/*" onChange={handleImageChange} />{" "} */}
           {/* accept="image/*"で画像のみ選択可能、ChangeしたときhandleImageChangeを実行 */}
-        </Box>
+          {/* </Box> */}
 
-        {/* ChangeしたときdeckClassを更新 */}
-        {/* valueにdeckClass */}
-          <FormControl fullWidth sx={{ mb: 2 }}>
+          {/* ChangeしたときdeckClassを更新 */}
+          {/* valueにdeckClass */}
+          <FormControl sx={{ width: 300, m: 1 }}>
             <InputLabel id="class-select-label">クラスを選択</InputLabel>
             <Select
               labelId="class-select-label"
@@ -181,41 +182,42 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
             label="デッキ名を入力"
             value={deckName}
             onChange={(e) => setDeckName(e.target.value)}
-						sx={{ mb:2 }}
-						/>
+            sx={{ m: 1 }}
+          />
 
-        {/* <input
+          {/* <input
           type="text"
           placeholder="デッキ名を入力"
           value={deckName}
           onChange={(e) => setDeckName(e.target.value)}
-        /> */}
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained" type="submit">
-            新規登録
-          </Button>
-          {/* submitしない場合はtype="button"にする clickしたときhandleUpdateを実行 */}
-          <Button
-            variant="outlined"
-            type="button"
-            onClick={handleUpdate}
-            disabled={!selectDeckId}
-          >
-            上書き保存
-          </Button>
-          {/* clickしたとき選択中のdeckIdのデッキに対してhandleDeleteを実行 deckIdがないと消せない 簡易バリデーション */}
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<DeleteIcon />}
-            type="button"
-            onClick={() => handleDelete(selectDeckId)}
-            disabled={!selectDeckId}
-          >
-            削除
-          </Button>
-        </Stack>
-			</form>
+					/> */}
+          <Stack direction="row" spacing={2} sx={{ m: 1 }}>
+            <Button variant="contained" type="submit">
+              新規登録
+            </Button>
+            {/* submitしない場合はtype="button"にする clickしたときhandleUpdateを実行 */}
+            <Button
+              variant="outlined"
+              type="button"
+              onClick={handleUpdate}
+              disabled={!selectDeckId}
+            >
+              上書き保存
+            </Button>
+            {/* clickしたとき選択中のdeckIdのデッキに対してhandleDeleteを実行 deckIdがないと消せない 簡易バリデーション */}
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteIcon />}
+              type="button"
+              onClick={() => handleDelete(selectDeckId)}
+              disabled={!selectDeckId}
+            >
+              削除
+            </Button>
+          </Stack>
+        </form>
+      </Box>
     </Box>
   );
 };
