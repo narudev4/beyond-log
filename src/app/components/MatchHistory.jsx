@@ -1,13 +1,14 @@
-import { Box, Grid, Typography } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Box, Grid, Typography, Button } from "@mui/material";
 
 // props：全対戦データ(matches)・選択中のデッキId（selectDeckId）
-const MatchHistory = ({ matches, selectDeckId }) => {
-	// 選択中のデッキIdに一致するデッキの戦績だけを抽出する
-  const filteredMatches = matches.filter(
-    (match) => match.deckId === selectDeckId).reverse();
-
+const MatchHistory = ({ matches, selectDeckId, onDeleteMatch }) => {
+  // 選択中のデッキIdに一致するデッキの戦績だけを抽出する
+  const filteredMatches = matches
+    .filter((match) => match.deckId === selectDeckId)
+    .reverse();
   return (
-    <Box component="section" sx={{ width:"100%" }}>
+    <Box component="section" sx={{ width: "100%" }}>
       <Typography
         variant="h6"
         component="h2"
@@ -22,7 +23,7 @@ const MatchHistory = ({ matches, selectDeckId }) => {
           p: 2,
           bgcolor: "grey.50",
           maxHeight: "350px",
-					width:"100%"
+          width: "100%",
         }}
       >
         {/*デッキ未選択："デッキを選択すると戦績が表示されます"を表示
@@ -51,10 +52,26 @@ const MatchHistory = ({ matches, selectDeckId }) => {
                 {match.result === "win" ? "勝利" : "敗北"} / {match.date}
                 {match.memo && (
                   <Typography variant="caption" color="text.secondary">
-                    {" "} メモ: {match.memo}
+                    {" "}
+                    メモ: {match.memo}
                   </Typography>
                 )}
               </Typography>
+              <Button
+                onClick={() => {
+                  if (window.confirm("この対戦を削除しますか？")) {
+                    onDeleteMatch(match.id);
+                  }
+                }}
+                color="error"
+                size="small"
+                type="button"
+                sx={{
+                  fontSize: "0.8rem",
+                }}
+              >
+                この対戦を削除
+              </Button>
             </Box>
           ))
         )}

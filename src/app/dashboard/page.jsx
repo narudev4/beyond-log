@@ -32,6 +32,11 @@ export default function DashboardPage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
     setMatches([]);
   };
+	const handleDeleteMatches = (id) => {
+		const newMatches = matches.filter((m) => m.id !== id);
+		setMatches(newMatches);
+		localStorage.setItem("matches", JSON.stringify(newMatches));
+	}
   return (
     <Grid container columns={12} sx={{ width: "100%" }} spacing={0.5}>
       {/* デッキの選択・作成・削除するフォーム */}
@@ -55,7 +60,7 @@ export default function DashboardPage() {
       </Grid>
 
       <Grid size={{ xs: 12, sm: 12, md:4}}>
-        <MatchHistory matches={matches} selectDeckId={selectDeckId}/>
+        <MatchHistory matches={matches} selectDeckId={selectDeckId} onDeleteMatch={handleDeleteMatches}/>
       </Grid>
       {/* グラフを表示するフォーム*/}
       {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
