@@ -6,8 +6,9 @@ import {
 	Button,
   Typography,
   Box,
+	Link,
 } from "@mui/material";
-import Link from "next/link";
+import NextLink from "next/link";
 
 const Header = () => {
 	const [user, setUser] = useState(null);
@@ -19,7 +20,7 @@ const Header = () => {
     <AppBar position="static" sx={{ backgroundColor: "grey.200", color: "black"}} elevation={0}>
 			<Toolbar>
 				<Typography sx={{ flexGrow: 1 }}>
-					<Link href="/dashboard" style={{ textDecoration: "none", color: "inherit"}}>Beyond Log</Link>
+					<Link component={NextLink} href="/dashboard" style={{ textDecoration: "none", color: "inherit"}}>Beyond Log</Link>
 				</Typography>
 				<Box>
 					{user ? (

@@ -1,5 +1,6 @@
 "use client";
 import { Box, Typography, Stack, Link } from "@mui/material";
+import NextLink from "next/link";
 
 const Footer = () => {
   return (
@@ -22,13 +23,13 @@ const Footer = () => {
         justifyContent="center"
         direction="row"
       >
-        <Link href="#" underline="hover" color="inherit">
-          利用規約（準備中）
+        <Link href="/terms" underline="hover" color="inherit">
+          利用規約
         </Link>
-        <Link href="#" underline="hover" color="inherit">
-          お問い合わせ（準備中）
+        <Link href="/contact" underline="hover" color="inherit">
+          お問い合わせ
         </Link>
-        <Typography variant="body2">© 2025 Beyond Log</Typography>
+        <Link component={NextLink} href="/dashboard" underline="hover" color="inherit">© 2025 Beyond Log</Link>
         <Typography variant="body2">v beta</Typography>
       </Stack>
     </Box>
