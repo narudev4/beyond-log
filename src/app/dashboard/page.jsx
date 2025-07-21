@@ -66,7 +66,7 @@ export default function DashboardPage() {
       {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
       <Grid size={{ xs: 12, sm: 12, md: 12 }}>
         {selectDeckId ? (
-          <WinRateGraph matches={matches} />
+          <WinRateGraph matches={matches} selectDeckId={selectDeckId} />
         ) : (
           <Box>
             {/* １つ目のTypographyはコンポーネント化するかもしれない */}
