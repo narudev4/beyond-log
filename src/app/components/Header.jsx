@@ -1,36 +1,72 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
-	Button,
+  Button,
   Typography,
   Box,
-	Link,
+  Link,
+  Avatar,
 } from "@mui/material";
 import NextLink from "next/link";
+import Image from "next/image";
+
+import { auth } from "../lib/firebase";
+import { loginWithGoogle, logout } from "../lib/firebaseAuth";
+import { onAuthStateChanged } from "firebase/auth";
+
+import icon from "../../../public/icon.png";
 
 const Header = () => {
-	const [user, setUser] = useState(null);
-	const handleLogin = () => {
-	alert("ログイン処理（仮）");
-	setUser(null);
-	}
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
   return (
-    <AppBar position="static" sx={{ backgroundColor: "grey.200", color: "black"}} elevation={0}>
-			<Toolbar>
-				<Typography sx={{ flexGrow: 1 }}>
-					<Link component={NextLink} href="/dashboard" style={{ textDecoration: "none", color: "inherit"}}>Beyond Log</Link>
-				</Typography>
-				<Box>
-					{user ? (
-						<Button color="inherit" onClick={handleLogin}>ログアウト</Button>
-					):(
-						<Button color="inherit" onClick={handleLogin}>ログイン</Button>
-					)}
-				</Box>
-			</Toolbar>
-		</AppBar>
+    <AppBar
+      position="fixed"
+      sx={{ backgroundColor: "grey.200", color: "black" }}
+      elevation={0}
+    >
+      <Toolbar>
+        <Box sx={{ flexGrow: 1 }}>
+          <Link
+            component={NextLink}
+            href="/dashboard"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Box display="flex" alignItems="center" gap={1}>
+              <Image src={icon} alt="アプリアイコン" width={32} height={32} />
+              <Typography variant="h6">beyond log</Typography>
+            </Box>
+          </Link>
+        </Box>
+        <Box display="flex" alignItems="center" gap={2}>
+          {user ? (
+            <>
+              <Avatar src={user.photoURL} sx={{ width: 30, height: 30 }} />
+              <Button color="inherit" onClick={() => {
+								const confirmed = window.confirm("ログアウトしますか？");
+								if (confirmed){
+									logout();
+								}
+							}}>
+                ログアウト
+              </Button>
+            </>
+          ) : (
+            <Button color="inherit" onClick={loginWithGoogle}>
+              ログイン
+            </Button>
+          )}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };
 
