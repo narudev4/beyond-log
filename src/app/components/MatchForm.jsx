@@ -13,6 +13,8 @@ import {
   Stack,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db, auth } from "../lib/firebase";
 
 const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
   // state
@@ -50,7 +52,7 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
   };
 
   // 対戦結果をローカルストレージに保存する関数
-  const handleClick = () => {
+  const handleClick = async () => {
     // エラー処理の関数
     const hasError = {
       selectedClass: selectedClass === "", // 空文字だとtrue（＝未選択）、選択されているとfalseになる
@@ -79,6 +81,24 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
     const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
     const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
+
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        await addDoc(collection(db, "matches"), {
+          userId: currentUser.uid,
+          deckId: matchData.deckId,
+          opponentDeck: matchData.opponentDeck,
+          wentFirst: matchData.wentFirst,
+          result: matchData.result,
+          memo: matchData.memo,
+          date: matchData.date,
+          createdAt: new Date(),
+        });
+      } catch (error) {
+        console.error("Firestoreへの保存に失敗:", error);
+      }
+    }
 
     // onAddMatchが関数型であれば親へ通知する
     if (typeof onAddMatch === "function") {
@@ -185,15 +205,16 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
             variant="contained"
             sx={{ p: 1, m: 2 }}
             onClick={() => {
-							if(!selectDeckId) {
-								alert("デッキを選択してください");
-								return;
-							}
-							const confirmReset = window.confirm("このデッキの戦績をリセットしますか？");
-							if(confirmReset) {
-								onResetMatches(selectDeckId);
-							}
-						}}
+              if (!selectDeckId) {
+                alert("デッキを選択してください");
+                return;
+              }
+              const confirmReset =
+                window.confirm("このデッキの戦績をリセットしますか？");
+              if (confirmReset) {
+                onResetMatches(selectDeckId);
+              }
+            }}
           >
             戦績をリセット
           </Button>
