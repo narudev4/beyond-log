@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { saveDeckToFirestore } from "../lib/firebaseAuth";
 
 // propsとして受け取る
 const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
@@ -35,7 +36,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
   }, [deckList]);
 
   // サブミット時にデッキを新規登録する関数
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // サブミット時のデフォルトの挙動を制御
     if (!deckName) {
       // 簡易バリデーション
@@ -54,6 +55,8 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       // deckImage: deckImageUrl,
       class: deckClass,
     };
+		await saveDeckToFirestore(newDeck);
+
     setDeckList([...deckList, newDeck]); // 既存のdeckListにnewDeckを追加して新しい配列にする
     onSelectDeck(newDeck.id); // onSelectDeckで親の状態を更新（newDeck.idでセレクトされているデッキのidを更新）
   };
