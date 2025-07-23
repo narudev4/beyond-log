@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# beyond log
+対戦型オンラインデジタルカードゲーム「Shadowverse: Worlds Beyond」を対象とした勝率記録アプリです。
+自分と相手のデッキ、先攻・後攻、勝敗、メモなどを記録し、勝率やデッキ相性をグラフで確認できます。
+シンプルなUIで、対戦の傾向分析に役立ちます。
 
-## Getting Started
+## 主な機能
+- デッキ作成（名前）
+- 対戦記録 (勝敗・先行後攻・対戦相手デッキ・メモ)
+- 勝率グラフ (円グラフ・相性リスト)
+- Googleログイン対応 (Firebase)
 
-First, run the development server:
+## スクショ
+<<<<<完成後画像貼る2,3枚>>>>>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 使用技術
+- JavaScript
+- Next.js
+- React
+- MUI
+- Firebase（Authentication, Firestore）
+- Recharts
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 今後の展望
+- TypeScriptによる再構築
+- Twitterログイン・Twitter戦績共有
+- スマホアプリ化(React Native)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# リンク
+デプロイ後追記
