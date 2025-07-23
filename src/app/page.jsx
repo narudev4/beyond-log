@@ -49,7 +49,7 @@ const HomePage = () => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={loginWithGoogle}
+          onClick={() => loginWithGoogle(router)}
           sx={{ textTransform: "none" }}
         >
           Googleログインで始める

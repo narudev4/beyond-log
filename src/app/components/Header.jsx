@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import NextLink from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { auth } from "../lib/firebase";
 import { loginWithGoogle, logout } from "../lib/firebaseAuth";
@@ -20,6 +21,7 @@ import icon from "../../../public/icon.png";
 
 const Header = () => {
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -50,17 +52,20 @@ const Header = () => {
           {user ? (
             <>
               <Avatar src={user.photoURL} sx={{ width: 30, height: 30 }} />
-              <Button color="inherit" onClick={() => {
-								const confirmed = window.confirm("ログアウトしますか？");
-								if (confirmed){
-									logout();
-								}
-							}}>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  const confirmed = window.confirm("ログアウトしますか？");
+                  if (confirmed) {
+                    logout();
+                  }
+                }}
+              >
                 ログアウト
               </Button>
             </>
           ) : (
-            <Button color="inherit" onClick={loginWithGoogle}>
+            <Button color="inherit" onClick={() => loginWithGoogle(router)}>
               ログイン
             </Button>
           )}

@@ -1,4 +1,3 @@
-import { Box, Grid } from "@mui/material";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import "./global.css";
@@ -13,11 +12,11 @@ export default function RootLayout({ children }) {
     <html lang="ja">
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <body>
-        <Box sx={{ pb: "64px" }}>
+        <div style={{ paddingBottom: "64px" }}>
           <Header />
           {children}
           <Footer />
-        </Box>
+        </div>
       </body>
     </html>
   );
