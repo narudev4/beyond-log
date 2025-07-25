@@ -46,7 +46,7 @@ export default function DashboardPage() {
             ...doc.data(),
           }));
           setAllMatches(fetchedMatches);
-					console.log("取得した全戦績:", fetchedMatches);
+          console.log("取得した全戦績:", fetchedMatches);
           setMatches(fetchedMatches);
         } catch (err) {
           console.error("Firestoreからの取得に失敗", err);
@@ -71,7 +71,7 @@ export default function DashboardPage() {
   // ローカルストレージから全体の戦績を取得してdeckIdを照らし合わせてsetMatchesで更新する
   // propsとしてDeckPanelに関数をわたす
   const handleDeckChange = (deckId) => {
-		console.log(allMatches);
+    console.log(allMatches);
     const filtered = allMatches.filter((m) => m.deckId === deckId);
     setMatches(filtered);
   };
@@ -105,7 +105,10 @@ export default function DashboardPage() {
       <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <MatchForm
           selectDeckId={selectDeckId}
-          onAddMatch={(newMatch) => setMatches((prev) => [...prev, newMatch])}
+          onAddMatch={(newMatch) => {
+            setMatches((prev) => [...prev, newMatch]);
+            setAllMatches((prev) => [...prev, newMatch]);
+          }}
           onResetMatches={handleResetMatches}
         />
       </Grid>

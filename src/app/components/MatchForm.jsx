@@ -43,13 +43,13 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
 
   // ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
   const calculateWinLose = (matchArray) => {
-    // 引数にmatchArrayを渡す
-    const filtered = matchArray.filter((m) => m.deckId === selectDeckId); // selectDeckIdと同じdeckIdの結果を取り出す
-    const wins = filtered.filter((m) => m.result === "win").length; // 取り出した中から"勝利"のみを取り出す
-    const loses = filtered.filter((m) => m.result === "lose").length; // 取り出した中から"敗北"のみを取り出す
-    setWinCount(wins); // 勝利数を更新
-    setLoseCount(loses); // 敗北数を更新
-  };
+  const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
+  const wins = filtered.filter((m) => m.result === "win").length;
+  const loses = filtered.filter((m) => m.result === "lose").length;
+
+  if (wins !== winCount) setWinCount(wins);
+  if (loses !== loseCount) setLoseCount(loses);
+};
 
   // 対戦結果をローカルストレージに保存する関数
   const handleClick = async () => {
@@ -66,53 +66,52 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
     //.some((v) => v)は１つでもtrueがあればtrueを返すメソッド
     // 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
     if (Object.values(hasError).some((v) => v)) return;
-
-    // 戦績データ
-    const matchData = {
-      id: Date.now().toString(), // 一意なid
-      deckId: selectDeckId,
-      opponentDeck: selectedClass, // 選択されたクラス
-      wentFirst: order === "先行", // 先行と後攻をtrue or falseで管理
-      result: result === "勝利" ? "win" : "lose", // 勝利・敗北を内部用にwin・loseに変換
-      memo,
-      date: new Date().toISOString().slice(0, 10), // ISO形式の日付部分だけをsliceで抜き出し
-    };
-
-    const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルストレージに保存されているmatchResultまたは空の配列を取り出す
-    const updated = [...prev, matchData]; // matchDataオブジェクトでローカルストレージを更新する関数
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // ローカルストレージに更新された対戦結果を登録する
-
     const currentUser = auth.currentUser;
-    if (currentUser) {
-      try {
-        await addDoc(collection(db, "matches"), {
-          userId: currentUser.uid,
-          deckId: matchData.deckId,
-          opponentDeck: matchData.opponentDeck,
-          wentFirst: matchData.wentFirst,
-          result: matchData.result,
-          memo: matchData.memo,
-          date: matchData.date,
-          createdAt: new Date(),
-        });
-      } catch (error) {
-        console.error("Firestoreへの保存に失敗:", error);
+    // 戦績データ
+    try {
+      const docRef = await addDoc(collection(db, "matches"), {
+        userId: currentUser?.uid || "guest",
+        deckId: selectDeckId,
+        opponentDeck: selectedClass,
+        wentFirst: order === "先行",
+        result: result === "勝利" ? "win" : "lose",
+        memo,
+        date: new Date().toISOString().slice(0, 10),
+        createdAt: new Date(),
+      });
+
+      // Firebaseが発行したIDをmatchData.idに使う
+      const matchData = {
+        id: docRef.id,
+        deckId: selectDeckId,
+        opponentDeck: selectedClass,
+        wentFirst: order === "先行",
+        result: result === "勝利" ? "win" : "lose",
+        memo,
+        date: new Date().toISOString().slice(0, 10),
+        createdAt: new Date(),
+      };
+
+      // localStorageに保存
+      const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      const updated = [...prev, matchData];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+      if (typeof onAddMatch === "function") {
+        onAddMatch(matchData);
       }
-    }
 
-    // onAddMatchが関数型であれば親へ通知する
-    if (typeof onAddMatch === "function") {
-      onAddMatch(matchData);
+      // フォームリセットと勝率更新
+      setSelectedClass("");
+      setOrder("");
+      setResult("");
+      setMemo("");
+      calculateWinLose(updated);
+    } catch (error) {
+      console.error("Firestoreへの保存に失敗:", error);
     }
-
-    // 結果登録後入力値をリセット
-    setSelectedClass("");
-    setOrder("");
-    setResult("");
-    setMemo("");
-    // 結果登録時に勝利数・敗北数を更新
-    calculateWinLose(updated);
   };
+
   return (
     <Box component="section">
       <Typography

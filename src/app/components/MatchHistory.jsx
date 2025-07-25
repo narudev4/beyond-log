@@ -23,23 +23,20 @@ const MatchHistory = ({ matches, selectDeckId, onDeleteMatch }) => {
     result: "win",
     memo: "",
   });
-
-  const deckMatches = matches.filter((match) => match.deckId === selectDeckId);
+  const uniqueMatches = Array.from(
+    new Map(matches.map((m) => [m.id, m])).values()
+  );
+  const deckMatches = uniqueMatches.filter((match) => match.deckId === selectDeckId);
   // 選択中のデッキIdに一致するデッキの戦績だけを抽出する
   const filteredMatches = deckMatches
     .filter(
       (match) => selectedClass === "all" || match.opponentDeck === selectedClass
     )
     .reverse();
-
-		const handleSave = (matchId) => {
-    const newMatches = matches.map((m) =>
-      m.id === matchId ? { ...m, ...editData } : m
-    );
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newMatches));
-    onUpdateMatch(newMatches);
-    setEditMatchId(null);
-  };
+  // 		console.log("全matches:", matches);
+  // console.log("現在選択中のdeckId:", selectDeckId);
+  // console.log("filter結果:", filteredMatches);
+  // console.table(filteredMatches.map((m) => ({ id: m.id, opponent: m.opponentDeck })));
 
   return (
     <Box component="section" sx={{ width: "100%" }}>
@@ -52,10 +49,10 @@ const MatchHistory = ({ matches, selectDeckId, onDeleteMatch }) => {
       </Typography>
       {selectDeckId && (
         <FormControl fullWidth size="small" sx={{ my: 1 }}>
-          <InputLabel>相手クラスで絞り込み</InputLabel>
+          <InputLabel>対戦クラスで絞り込み</InputLabel>
           <Select
             value={selectedClass}
-            label="相手クラスで絞り込み"
+            label="対戦クラスで絞り込み"
             onChange={(e) => setSelectedClass(e.target.value)}
           >
             <MenuItem value="all">全て</MenuItem>
