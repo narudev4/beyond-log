@@ -14,17 +14,24 @@ import { query, where, getDocs } from "firebase/firestore";
 const STORAGE_KEY = "matchResult";
 
 export default function DashboardPage() {
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setUser(user);
       if (user) {
         const localMatches = JSON.parse(
           localStorage.getItem(STORAGE_KEY) || "[]"
         );
-        if (localMatches.length > 0) {
+        if (
+          localMatches.length > 0 &&
+          !localStorage.getItem("migratedToFirestore")
+        ) {
           for (const match of localMatches) {
             try {
+              const { id, ...rest } = match;
               await addDoc(collection(db, "matches"), {
-                ...match,
+                ...rest,
                 userId: user.uid,
                 createdAt: new Date(),
               });
@@ -33,7 +40,7 @@ export default function DashboardPage() {
             }
           }
           localStorage.removeItem(STORAGE_KEY);
-          setMatches([]);
+          localStorage.setItem("migratedToFirestore", "true");
         }
         try {
           const q = query(
@@ -45,6 +52,10 @@ export default function DashboardPage() {
             id: doc.id,
             ...doc.data(),
           }));
+          const uniqueMatches = Array.from(
+            new Map(fetchedMatches.map((m) => [m.id, m])).values()
+          );
+
           setAllMatches(fetchedMatches);
           console.log("取得した全戦績:", fetchedMatches);
           setMatches(fetchedMatches);
@@ -53,20 +64,29 @@ export default function DashboardPage() {
         }
       }
     });
-
-    return () => unsubscribe(); // クリーンアップ
+    return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      const savedMatches = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+      );
+      setMatches(savedMatches);
+      setAllMatches(savedMatches);
+    }
+  }, [user]);
 
   const [matches, setMatches] = useState([]); // MatchFormから追加される対戦履歴一覧（全体の戦績）
   const [allMatches, setAllMatches] = useState([]);
   const [selectDeckId, setSelectDeckId] = useState(null); // 現在選択中のデッキid（DeckPanelからリフトアップ)
 
-  // 初回マウント時にローカルストレージから保存済みの戦績を読み込む
-  useEffect(() => {
-    const savedMatches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルからmatchResultか空配列を取得
-    setMatches(savedMatches); // 再レンダリング時にもグラフが復元される
-    setAllMatches(savedMatches);
-  }, []);
+  // // 初回マウント時にローカルストレージから保存済みの戦績を読み込む
+  // useEffect(() => {
+  //   const savedMatches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); // ローカルからmatchResultか空配列を取得
+  //   setMatches(savedMatches); // 再レンダリング時にもグラフが復元される
+  //   setAllMatches(savedMatches);
+  // }, []);
 
   // ローカルストレージから全体の戦績を取得してdeckIdを照らし合わせてsetMatchesで更新する
   // propsとしてDeckPanelに関数をわたす
@@ -88,8 +108,17 @@ export default function DashboardPage() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newMatches));
     setAllMatches(newMatches);
   };
+
+	const handleUpdateMatch = (updatedMatch) => {
+  setMatches((prev) =>
+    prev.map((m) => (m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m))
+  );
+  setAllMatches((prev) =>
+    prev.map((m) => (m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m))
+  );
+};
   return (
-    <Grid container columns={12} sx={{ width: "100%" }} spacing={0.5}>
+    <Grid container columns={12} sx={{ width: "100%", marginTop: "64px" }} spacing={0.5}>
       {/* デッキの選択・作成・削除するフォーム */}
       {/* DeckPanelとMatchFormにpropsとしてselectDeckIdを渡す */}
       <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -118,6 +147,7 @@ export default function DashboardPage() {
           matches={matches}
           selectDeckId={selectDeckId}
           onDeleteMatch={handleDeleteMatches}
+					onUpdateMatch={handleUpdateMatch}
         />
       </Grid>
       {/* グラフを表示するフォーム*/}

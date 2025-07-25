@@ -3,7 +3,7 @@ import { Container, Typography, Link, Box } from "@mui/material";
 
 const ContactPage = () => {
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
+    <Container maxWidth="sm" sx={{ p: 2, marginTop: "64px" }}>
       <Typography variant="h4" component="h1" gutterBottom>
         お問い合わせ
       </Typography>

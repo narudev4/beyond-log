@@ -29,7 +29,7 @@ const Footer = () => {
         <Link href="/contact" underline="hover" color="inherit">
           お問い合わせ
         </Link>
-        <Link component={NextLink} href="/dashboard" underline="hover" color="inherit">© 2025 beyond log</Link>
+        <Typography variant="body1">© 2025 beyond log</Typography>
         <Typography variant="body2">v beta</Typography>
       </Stack>
     </Box>

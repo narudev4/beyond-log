@@ -132,9 +132,8 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       // 引数にidを渡す
       setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
       setDeckClass(""); // 初期化
-      setDeckName(""); // 初期化
-      // setDeckImageUrl(null); // 初期化
-      onSelectDeck(""); // 初期化
+      setDeckName("");
+      onSelectDeck("");
       onDeckChange("");
     }
   };
@@ -146,7 +145,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
         component="h2"
         sx={{ bgcolor: "grey.300", p: 1, mb: 2 }}
       >
-        DECK
+        デッキ
       </Typography>
       <Box
         sx={{

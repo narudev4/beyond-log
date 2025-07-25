@@ -77,12 +77,12 @@ const calculateWinRateByClass = (matches) => {
     if (isWin) result[cls].win += 1;
   });
   return CLASS_ORDER.map((cls) => {
-      const data = result[cls];
-			return{
-				name:cls,
-				winRate: data ? Math.round((data.win / data.total) * 100) : 0,
-			};
-    });
+    const data = result[cls];
+    return {
+      name: cls,
+      winRate: data ? Math.round((data.win / data.total) * 100) : 0,
+    };
+  });
 };
 
 // 円グラフ用の色の配列
@@ -100,7 +100,9 @@ const CLASS_ORDER = Object.keys(CLASS_COLORS);
 
 // WinRateGraph：親から対戦データを受け取り、グラフとして勝率を表示
 const WinRateGraph = ({ matches, selectDeckId }) => {
-	const filteredMatches = matches.filter((match) => match.deckId === selectDeckId);
+  const filteredMatches = matches.filter(
+    (match) => match.deckId === selectDeckId
+  );
 
   const { win, lose, rate, chartData } = getTotalWinRateData(filteredMatches);
   const { firstRate, secondRate } = getFirstSecondRates(filteredMatches);
@@ -117,7 +119,7 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
         グラフ
       </Typography>
       <Grid container columns={12} sx={{ pt: 5 }}>
-        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 300 }}>
+        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 250 }}>
           {/* ResponsiveContainer：親要素に高さを必ず含める */}
           <ResponsiveContainer width="100%" height="100%">
             {/* BarChart：dataを渡すとグラフが描画される */}
@@ -161,7 +163,7 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
             先行 {firstRate}% / 後攻 {secondRate}%
           </Typography>
         </Grid>
-        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 300 }}>
+        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 250 }}>
           <Typography>分布</Typography>
           <ResponsiveContainer width="100%" height="100%">
             {/* 円グラフ全体のコンテナ */}
@@ -205,31 +207,38 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
             </PieChart>
           </ResponsiveContainer>
         </Grid>
+
         <Grid
           size={{ sx: 12, md: 4 }}
+          sx={{
+						display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+						height: 250,
+						pt: 2,
+          }}
 					>
           <Box>
             {classWinRate.map(({ name, winRate }) => (
-              <Box
-                key={name}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mb: 1,
-                }}
+							<Box
+							key={name}
+							sx={{
+								display: "flex",
+								alignItems: "center",
+								mb: 1,
+							}}
               >
                 {/* 色アイコン */}
                 <Box
                   sx={{
-                    width: 12,
+										width: 12,
                     height: 12,
-                    borderRadius: "50%",
                     bgcolor: CLASS_COLORS[name] || "#ccc",
                     mr: 1,
                   }}
-                />
-                <Typography variant="body2" sx={{ mr: 1 }}>
-                  {name}：
+									/>
+                <Typography variant="body1" sx={{ mr: 1 }}>
+                対 {name}：
                 </Typography>
                 <Typography variant="body2" fontWeight="bold">
                   {winRate}%

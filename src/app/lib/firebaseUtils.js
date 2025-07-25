@@ -1,5 +1,12 @@
 // lib/firebaseUtils.js
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "./firebase";
 
 /**
@@ -20,4 +27,9 @@ export const fetchUserDecks = async (userId) => {
     console.error("デッキ取得に失敗しました:", error);
     return [];
   }
+};
+
+export const updateMatchInFirestore = async (matchId, newData) => {
+  const matchRef = doc(db, "matches", matchId);
+  await updateDoc(matchRef, newData);
 };

@@ -3,7 +3,7 @@ import { Box, Typography, Container } from "@mui/material";
 
 const TermsPage = () => {
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{ p: 2, marginTop: "64px" }}>
       <Typography variant="h4" component="h1" gutterBottom>
         利用規約
       </Typography>
@@ -23,11 +23,11 @@ const TermsPage = () => {
         ・予告なく内容の変更、またはサービスの提供を終了する場合があります。
       </Typography>
       <Typography variant="body2" component="p" sx={{ mb: 2 }}>
-        ・本アプリに関するお問い合わせは、お問い合わせページまたはSNS等をご利用ください。
+        ・本アプリに関するお問い合わせは、お問い合わせページまたはSNSをご利用ください。
       </Typography>
 
       <Typography variant="body1" sx={{ mt: 4 }}>
-        最終更新日: 2025年7月21日
+        最終更新日: 2025年7月25日
       </Typography>
     </Container>
   );
