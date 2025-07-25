@@ -1,12 +1,46 @@
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Box, Grid, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Typography,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import { useState } from "react";
 
+const STORAGE_KEY = "matchResult";
 // props：全対戦データ(matches)・選択中のデッキId（selectDeckId）
 const MatchHistory = ({ matches, selectDeckId, onDeleteMatch }) => {
+  const [selectedClass, setSelectedClass] = useState("all");
+  const [editMatchId, setEditMatchId] = useState(null);
+  const [editData, setEditData] = useState({
+    opponentDeck: "",
+    opponentClass: "",
+    wentFirst: true,
+    result: "win",
+    memo: "",
+  });
+
+  const deckMatches = matches.filter((match) => match.deckId === selectDeckId);
   // 選択中のデッキIdに一致するデッキの戦績だけを抽出する
-  const filteredMatches = matches
-    .filter((match) => match.deckId === selectDeckId)
+  const filteredMatches = deckMatches
+    .filter(
+      (match) => selectedClass === "all" || match.opponentDeck === selectedClass
+    )
     .reverse();
+
+		const handleSave = (matchId) => {
+    const newMatches = matches.map((m) =>
+      m.id === matchId ? { ...m, ...editData } : m
+    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newMatches));
+    onUpdateMatch(newMatches);
+    setEditMatchId(null);
+  };
+
   return (
     <Box component="section" sx={{ width: "100%" }}>
       <Typography
@@ -16,6 +50,25 @@ const MatchHistory = ({ matches, selectDeckId, onDeleteMatch }) => {
       >
         対戦履歴
       </Typography>
+      {selectDeckId && (
+        <FormControl fullWidth size="small" sx={{ my: 1 }}>
+          <InputLabel>相手クラスで絞り込み</InputLabel>
+          <Select
+            value={selectedClass}
+            label="相手クラスで絞り込み"
+            onChange={(e) => setSelectedClass(e.target.value)}
+          >
+            <MenuItem value="all">全て</MenuItem>
+            <MenuItem value="エルフ">エルフ</MenuItem>
+            <MenuItem value="ロイヤル">ロイヤル</MenuItem>
+            <MenuItem value="ウィッチ">ウィッチ</MenuItem>
+            <MenuItem value="ドラゴン">ドラゴン</MenuItem>
+            <MenuItem value="ナイトメア">ナイトメア</MenuItem>
+            <MenuItem value="ビショップ">ビショップ</MenuItem>
+            <MenuItem value="ネメシス">ネメシス</MenuItem>
+          </Select>
+        </FormControl>
+      )}
       <Grid
         sx={{
           height: "calc(100vh - 160px)", // ヘッダーなどの上の高さを差し引く
