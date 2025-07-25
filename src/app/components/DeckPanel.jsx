@@ -13,6 +13,9 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { saveDeckToFirestore } from "../lib/firebaseAuth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { fetchUserDecks } from "../lib/firebaseUtils";
 
 // propsとして受け取る
 const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
@@ -28,6 +31,22 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
     if (savedDecks) {
       setDeckList(JSON.parse(savedDecks));
     }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const decks = await fetchUserDecks(user.uid);
+        setDeckList(decks);
+      } else {
+        const savedDecks = localStorage.getItem("deckList");
+        if (savedDecks) {
+          setDeckList(JSON.parse(savedDecks));
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   // deckListの状態が変わるたびにローカルストレージに保存
@@ -50,15 +69,14 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
     }
     const newDeck = {
       // id,name,deckImage,classをnewDeckオブジェクトでデッキを保存する
-      id: Date.now(),
+      id: Date.now().toString(),
       name: deckName,
       // deckImage: deckImageUrl,
       class: deckClass,
     };
-		await saveDeckToFirestore(newDeck);
-
     setDeckList([...deckList, newDeck]); // 既存のdeckListにnewDeckを追加して新しい配列にする
     onSelectDeck(newDeck.id); // onSelectDeckで親の状態を更新（newDeck.idでセレクトされているデッキのidを更新）
+    await saveDeckToFirestore(newDeck);
   };
 
   //  画像が変わったときに画像を取得しURLに変換する関数
@@ -75,7 +93,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
 
   // selectで選択されたデッキIDを元にdeckListからデッキを呼び出して状態に反映する関数
   const handleDeckSelect = (e) => {
-    const id = Number(e.target.value); // Number指定でidを取得
+    const id = e.target.value; // Number指定でidを取得
     const deck = deckList.find((d) => d.id === id); // 引数にdを渡してd.idがconst idと同じならデッキ内容をifで更新
     if (deck) {
       onSelectDeck(deck.id);
@@ -109,16 +127,16 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
 
   // デッキ削除の関数
   const handleDelete = (id) => {
-		const confirmDelete = window.confirm("このデッキを削除しますか？");
-		if(confirmDelete) {
-			// 引数にidを渡す
-			setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
-			setDeckClass(""); // 初期化
-			setDeckName(""); // 初期化
-			// setDeckImageUrl(null); // 初期化
-			onSelectDeck(""); // 初期化
-			onDeckChange("");
-		}
+    const confirmDelete = window.confirm("このデッキを削除しますか？");
+    if (confirmDelete) {
+      // 引数にidを渡す
+      setDeckList((prev) => prev.filter((d) => d.id !== id)); // previous state（直前の状態）のidが一致しないものを残す（一致するものを削除）
+      setDeckClass(""); // 初期化
+      setDeckName(""); // 初期化
+      // setDeckImageUrl(null); // 初期化
+      onSelectDeck(""); // 初期化
+      onDeckChange("");
+    }
   };
 
   return (
@@ -130,7 +148,14 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
       >
         DECK
       </Typography>
-      <Box  sx={{ display: "flex", flexDirection: "column", alignItems: "center", px:2}}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          px: 2,
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <FormControl sx={{ width: 300, m: 1 }}>
             <InputLabel id="deck-select-label">デッキを選択</InputLabel>
@@ -145,7 +170,9 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
               {/* 引数にdを渡してdeckListをmapでループする、keyとvalueにd.idを設定、d.nameでデッキ名表示 */}
               {deckList.map((d) => (
                 <MenuItem key={d.id} value={d.id}>
-                  {d.name}{" - "}{d.class}
+                  {d.name}
+                  {" - "}
+                  {d.class}
                 </MenuItem>
               ))}
             </Select>
