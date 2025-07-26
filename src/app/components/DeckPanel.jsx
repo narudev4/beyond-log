@@ -152,10 +152,12 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+					justifyContent: "center",
           px: 2,
+					width: "100%",
         }}
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 320 }}>
           <FormControl sx={{ width: 300, m: 1 }}>
             <InputLabel id="deck-select-label">デッキを選択</InputLabel>
             {/* formがsubmitしたときhandleSubmitを実行 */}
@@ -224,7 +226,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
           onChange={(e) => setDeckName(e.target.value)}
 					/> */}
           <Stack direction="row" spacing={2} sx={{ m: 1 }}>
-            <Button variant="contained" type="submit">
+            <Button variant="contained" type="submit" sx={{ whiteSpace: "nowrap", minWidth: 100 }}>
               新規登録
             </Button>
             {/* submitしない場合はtype="button"にする clickしたときhandleUpdateを実行 */}
@@ -233,6 +235,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
               type="button"
               onClick={handleUpdate}
               disabled={!selectDeckId}
+							sx={{ whiteSpace: "nowrap", minWidth: 100 }}
             >
               上書き保存
             </Button>
@@ -244,6 +247,7 @@ const DeckPanel = ({ selectDeckId, onSelectDeck, onDeckChange }) => {
               type="button"
               onClick={() => handleDelete(selectDeckId)}
               disabled={!selectDeckId}
+							sx={{ whiteSpace: "nowrap", minWidth: 100 }}
             >
               削除
             </Button>

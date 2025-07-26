@@ -1,20 +1,23 @@
 "use client";
 import { Box, Typography, Stack, Link } from "@mui/material";
-import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+
 
 const Footer = () => {
+	const pathname = usePathname();
+	const isFixed = pathname === "/terms" || pathname === "/contact";
   return (
     <Box
       component="footer"
       sx={{
-				position: "fixed",
+        position: isFixed ? "fixed" : "static",
         bottom: 0,
-				left: 0,
-				width: "100%",
+        left: 0,
+        width: "100%",
         backgroundColor: "grey.200",
         color: "black",
         py: 1,
-				zIndex: (theme) => theme.zIndex.appBar,
+        zIndex: (theme) => theme.zIndex.appBar,
       }}
     >
       <Stack

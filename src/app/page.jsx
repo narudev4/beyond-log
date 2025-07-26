@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { loginWithGoogle } from "./lib/firebaseAuth";
 import logo from "../../public/logo.png";
+import { auth } from "./lib/firebase";
 
 const HomePage = () => {
   const router = useRouter();
@@ -13,7 +14,7 @@ const HomePage = () => {
     <Box
       component="main"
       sx={{
-        height: "calc(100vh - 64px)", // AppBarの高さを引いた分
+        height: "calc(100vh - 40px)", // AppBarの高さを引いた分
         pt: "64px", // paddingTopでもOK（内容がAppBarと重ならないように）
         display: "flex",
         flexDirection: "column",
@@ -33,7 +34,9 @@ const HomePage = () => {
       </Typography>
 
       <Typography variant="body2" color="text.secondary" mt={2}>
-        Googleアカウントでログインすれば、戦績を保存できて複数端末で引き継ぎ可能。
+        Googleアカウントでログインすれば、
+        <br />
+        戦績を保存できて複数端末で引き継ぎ可能。
         <br />
         今後は、X(旧Twitter)で勝率を共有できる機能も追加予定です！
       </Typography>
@@ -49,7 +52,13 @@ const HomePage = () => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => loginWithGoogle(router)}
+          onClick={() => {
+            if (auth.currentUser) {
+              router.push("/dashboard");
+            } else {
+              loginWithGoogle(router);
+            }
+          }}
           sx={{ textTransform: "none" }}
         >
           Googleログインで始める

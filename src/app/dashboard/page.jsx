@@ -109,68 +109,90 @@ export default function DashboardPage() {
     setAllMatches(newMatches);
   };
 
-	const handleUpdateMatch = (updatedMatch) => {
-  setMatches((prev) =>
-    prev.map((m) => (m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m))
-  );
-  setAllMatches((prev) =>
-    prev.map((m) => (m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m))
-  );
-};
+  const handleUpdateMatch = (updatedMatch) => {
+    setMatches((prev) =>
+      prev.map((m) =>
+        m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m
+      )
+    );
+    setAllMatches((prev) =>
+      prev.map((m) =>
+        m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m
+      )
+    );
+  };
   return (
-    <Grid container columns={12} sx={{ width: "100%", marginTop: "64px" }} spacing={0.5}>
-      {/* デッキの選択・作成・削除するフォーム */}
-      {/* DeckPanelとMatchFormにpropsとしてselectDeckIdを渡す */}
-      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-        <DeckPanel
-          selectDeckId={selectDeckId}
-          onSelectDeck={setSelectDeckId}
-          onDeckChange={handleDeckChange}
-        />
-      </Grid>
+    <Box
+      component="main"
+      sx={{
+        minHeight: "calc(100vh - 104px)",
+      }}
+    >
+      <Grid
+        container
+        columns={12}
+        sx={{ width: "100%", marginTop: { xs: "56px", sm: "64px" } }}
+        spacing={0.5}
+      >
+        {/* デッキの選択・作成・削除するフォーム */}
+        {/* DeckPanelとMatchFormにpropsとしてselectDeckIdを渡す */}
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+  <Box sx={{ height: "100%" }}>
+    <DeckPanel
+      selectDeckId={selectDeckId}
+      onSelectDeck={setSelectDeckId}
+      onDeckChange={handleDeckChange}
+    />
+  </Box>
+</Grid>
 
-      {/* 戦績（matches）を新規登録するフォーム*/}
-      {/* selectDeckIdで選択中のデッキの戦績に限定できる */}
-      <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-        <MatchForm
-          selectDeckId={selectDeckId}
-          onAddMatch={(newMatch) => {
-            setMatches((prev) => [...prev, newMatch]);
-            setAllMatches((prev) => [...prev, newMatch]);
-          }}
-          onResetMatches={handleResetMatches}
-        />
-      </Grid>
+        {/* 戦績（matches）を新規登録するフォーム*/}
+        {/* selectDeckIdで選択中のデッキの戦績に限定できる */}
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+  <Box sx={{ height: "100%" }}>
+    <MatchForm
+      selectDeckId={selectDeckId}
+      onAddMatch={(newMatch) => {
+        setMatches((prev) => [...prev, newMatch]);
+        setAllMatches((prev) => [...prev, newMatch]);
+      }}
+      onResetMatches={handleResetMatches}
+    />
+  </Box>
+</Grid>
 
-      <Grid size={{ xs: 12, sm: 12, md: 4 }}>
-        <MatchHistory
-          matches={matches}
-          selectDeckId={selectDeckId}
-          onDeleteMatch={handleDeleteMatches}
-					onUpdateMatch={handleUpdateMatch}
-        />
+        <Grid size={{ xs: 12, sm: 12, md: 4 }} >
+          <Box sx={{ height: 420, overflowY: "auto" }}>
+    <MatchHistory
+      matches={matches}
+      selectDeckId={selectDeckId}
+      onDeleteMatch={handleDeleteMatches}
+      onUpdateMatch={handleUpdateMatch}
+    />
+  </Box>
+        </Grid>
+        {/* グラフを表示するフォーム*/}
+        {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
+        <Grid size={{ xs: 12, sm: 12, md: 12 }}>
+          {selectDeckId ? (
+            <WinRateGraph matches={matches} selectDeckId={selectDeckId} />
+          ) : (
+            <Box>
+              {/* １つ目のTypographyはコンポーネント化するかもしれない */}
+              <Typography
+                variant="h6"
+                component="h2"
+                sx={{ bgcolor: "grey.300", p: 2 }}
+              >
+                グラフ
+              </Typography>
+              <Typography sx={{ p: 2 }}>
+                デッキを選択すると戦績が表示されます
+              </Typography>
+            </Box>
+          )}
+        </Grid>
       </Grid>
-      {/* グラフを表示するフォーム*/}
-      {/* MatchFormの登録内容(matches)を元に勝率グラフを更新 */}
-      <Grid size={{ xs: 12, sm: 12, md: 12 }}>
-        {selectDeckId ? (
-          <WinRateGraph matches={matches} selectDeckId={selectDeckId} />
-        ) : (
-          <Box>
-            {/* １つ目のTypographyはコンポーネント化するかもしれない */}
-            <Typography
-              variant="h6"
-              component="h2"
-              sx={{ bgcolor: "grey.300", p: 2 }}
-            >
-              グラフ
-            </Typography>
-            <Typography sx={{ p: 2 }}>
-              デッキを選択すると戦績が表示されます
-            </Typography>
-          </Box>
-        )}
-      </Grid>
-    </Grid>
+    </Box>
   );
 }

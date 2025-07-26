@@ -3,7 +3,7 @@ import { Box, Typography, Container } from "@mui/material";
 
 const TermsPage = () => {
   return (
-    <Container maxWidth="md" sx={{ p: 2, marginTop: "64px" }}>
+    <Container maxWidth="md" sx={{ p: 2, marginTop: "64px"}}>
       <Typography variant="h4" component="h1" gutterBottom>
         利用規約
       </Typography>

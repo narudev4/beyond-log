@@ -119,7 +119,7 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
         グラフ
       </Typography>
       <Grid container columns={12} sx={{ pt: 5 }}>
-        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 250 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ width: "100%", height: 220, mb:"40px" }}>
           {/* ResponsiveContainer：親要素に高さを必ず含める */}
           <ResponsiveContainer width="100%" height="100%">
             {/* BarChart：dataを渡すとグラフが描画される */}
@@ -163,9 +163,10 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
             先行 {firstRate}% / 後攻 {secondRate}%
           </Typography>
         </Grid>
-        <Grid size={{ sx: 12, md: 4 }} sx={{ width: "100%", height: 250 }}>
-          <Typography>分布</Typography>
-          <ResponsiveContainer width="100%" height="100%">
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Typography sx={{textAlign: "center"}}>分布</Typography>
+					<Box sx={{ width: "100%", height: 250, mb:"20px"}}>
+						<ResponsiveContainer width="100%" height="100%">
             {/* 円グラフ全体のコンテナ */}
             <PieChart>
               {/*
@@ -206,10 +207,11 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
+					</Box>
         </Grid>
 
         <Grid
-          size={{ sx: 12, md: 4 }}
+          size={{ xs: 12, md: 4 }}
           sx={{
 						display: "flex",
             justifyContent: "center",
@@ -218,7 +220,7 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
 						pt: 2,
           }}
 					>
-          <Box>
+          <Box sx={{mb :"20px"}}>
             {classWinRate.map(({ name, winRate }) => (
 							<Box
 							key={name}
