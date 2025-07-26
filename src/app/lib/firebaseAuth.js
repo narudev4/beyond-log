@@ -48,7 +48,6 @@ export const saveDeckToFirestore = async (deckData) => {
       imageUrl: deckData.imageUrl || "",
       createdAt: new Date(),
     });
-    console.log("デッキを保存しました");
   } catch (error) {
     console.error("デッキの保存に失敗しました", error);
   }

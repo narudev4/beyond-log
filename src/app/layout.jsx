@@ -7,17 +7,19 @@ export const metadata = {
   description: "Shadowverse Worlds Beyond 戦績記録アプリ",
   metadataBase: new URL("https://example.com"),
   openGraph: {
+		images:"",
     title: "beyond log",
-    description: "シャドバの戦績を簡単管理。グラフで傾向分析。",
+    description: "シャドバWBの戦績を簡単管理。グラフで傾向分析。",
     url: "https://example.com",
     siteName: "beyond log",
     locale: "ja_JP",
     type: "website",
   },
   twitter: {
+		images:"",
     card: "summary_large_image",
     title: "beyond log",
-    description: "シャドバ戦績管理・勝率可視化アプリ",
+    description: "シャドバWB戦績管理アプリ",
   },
 };
 

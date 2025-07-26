@@ -57,7 +57,6 @@ export default function DashboardPage() {
           );
 
           setAllMatches(fetchedMatches);
-          console.log("取得した全戦績:", fetchedMatches);
           setMatches(fetchedMatches);
         } catch (err) {
           console.error("Firestoreからの取得に失敗", err);
@@ -91,7 +90,6 @@ export default function DashboardPage() {
   // ローカルストレージから全体の戦績を取得してdeckIdを照らし合わせてsetMatchesで更新する
   // propsとしてDeckPanelに関数をわたす
   const handleDeckChange = (deckId) => {
-    console.log(allMatches);
     const filtered = allMatches.filter((m) => m.deckId === deckId);
     setMatches(filtered);
   };

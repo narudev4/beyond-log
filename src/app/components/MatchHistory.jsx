@@ -72,10 +72,6 @@ const MatchHistory = ({ matches, selectDeckId, onDeleteMatch, onUpdateMatch }) =
       (match) => selectedClass === "all" || match.opponentDeck === selectedClass
     )
     .reverse();
-  // 		console.log("全matches:", matches);
-  // console.log("現在選択中のdeckId:", selectDeckId);
-  // console.log("filter結果:", filteredMatches);
-  // console.table(filteredMatches.map((m) => ({ id: m.id, opponent: m.opponentDeck })));
 
   return (
     <Box component="section" sx={{ width: "100%"}}>
