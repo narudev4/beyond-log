@@ -1,4 +1,3 @@
-// lib/firebaseUtils.js
 import {
   collection,
   query,
@@ -10,9 +9,8 @@ import {
 import { db } from "./firebase";
 
 /**
- * Firestore からログインユーザーのデッキ一覧を取得する
- * @param {string} userId - Firebase AuthのユーザーID
- * @returns {Promise<Array>} ユーザーのデッキ一覧（オブジェクト配列）
+ * @param {string} userId
+ * @returns {Promise<Array>}
  */
 export const fetchUserDecks = async (userId) => {
   try {

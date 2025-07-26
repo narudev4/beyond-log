@@ -14,8 +14,8 @@ const HomePage = () => {
     <Box
       component="main"
       sx={{
-        height: "calc(100vh - 40px)", // AppBarの高さを引いた分
-        pt: "64px", // paddingTopでもOK（内容がAppBarと重ならないように）
+        height: "calc(100vh - 40px)",
+        pt: "64px",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

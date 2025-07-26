@@ -17,31 +17,26 @@ import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../lib/firebase";
 
 const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
-  // state
-  const [selectedClass, setSelectedClass] = useState(""); // 対戦クラス
-  const [order, setOrder] = useState(""); // 先行・後攻
-  const [result, setResult] = useState(""); // 勝利・敗北
-  const [memo, setMemo] = useState(""); // メモ
-  const [winCount, setWinCount] = useState(0); // 勝利数 WinRateGraphで表示予定
-  const [loseCount, setLoseCount] = useState(0); // 敗北数 WinRateGraphで表示予定
+  const [selectedClass, setSelectedClass] = useState("");
+  const [order, setOrder] = useState("");
+  const [result, setResult] = useState("");
+  const [memo, setMemo] = useState("");
+  const [winCount, setWinCount] = useState(0);
+  const [loseCount, setLoseCount] = useState(0);
   const [error, setError] = useState({
-    // エラーメッセージ用の状態
-    selectedClass: false, // 初期値は未選択(false = エラーなし)
+    selectedClass: false,
     order: false,
     result: false,
     deck: false,
   });
 
-  // ローカルストレージの保存キー
   const STORAGE_KEY = "matchResult";
 
-  // デッキ選択時：ローカルストレージから対戦結果を取得し、勝敗数を集計
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     calculateWinLose(data);
   }, [selectDeckId]);
 
-  // ローカルストレージに保存された対戦結果の中から勝利数・敗北数を取り出して更新する関数
   const calculateWinLose = (matchArray) => {
   const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
   const wins = filtered.filter((m) => m.result === "win").length;
@@ -51,23 +46,17 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
   if (loses !== loseCount) setLoseCount(loses);
 };
 
-  // 対戦結果をローカルストレージに保存する関数
   const handleClick = async () => {
-    // エラー処理の関数
     const hasError = {
-      selectedClass: selectedClass === "", // 空文字だとtrue（＝未選択）、選択されているとfalseになる
+      selectedClass: selectedClass === "",
       order: order === "",
       result: result === "",
       deck: selectDeckId === null,
     };
-    setError(hasError); // エラー情報を更新
+    setError(hasError);
 
-    // Object.values(hasError)で[true, true, false]のような配列を取り出す
-    //.some((v) => v)は１つでもtrueがあればtrueを返すメソッド
-    // 取り出した配列にどれか１つでも未入力があればtrueになるから処理を中断する
     if (Object.values(hasError).some((v) => v)) return;
     const currentUser = auth.currentUser;
-    // 戦績データ
     try {
       const docRef = await addDoc(collection(db, "matches"), {
         userId: currentUser?.uid || "guest",
@@ -80,7 +69,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
         createdAt: new Date(),
       });
 
-      // Firebaseが発行したIDをmatchData.idに使う
       const matchData = {
         id: docRef.id,
         deckId: selectDeckId,
@@ -92,7 +80,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
         createdAt: new Date(),
       };
 
-      // localStorageに保存
       const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       const updated = [...prev, matchData];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
@@ -101,7 +88,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
         onAddMatch(matchData);
       }
 
-      // フォームリセットと勝率更新
       setSelectedClass("");
       setOrder("");
       setResult("");
@@ -124,18 +110,18 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        {/* エラー確認のためにerror={error.selectedClass} */}
+
         <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
-          {/* id,labelId,labelを設定するとよりラベルが入力欄に重ならずに表示できる */}
+
           <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
-          {/* クラスが変わったときselectedClassを更新 */}
+
           <Select
             labelId="class-select-label"
             label="対戦したクラスを選択"
             value={selectedClass}
             onChange={(e) => setSelectedClass(e.target.value)}
           >
-            {/* MenuItemはHTMLの<option>のようなもの */}
+
             <MenuItem value="エルフ">エルフ</MenuItem>
             <MenuItem value="ロイヤル">ロイヤル</MenuItem>
             <MenuItem value="ウィッチ">ウィッチ</MenuItem>
@@ -146,16 +132,12 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
           </Select>
         </FormControl>
         <Box>
-          {/* rowで横並び
-				先行・後攻の状態
-				選択時setOrderを更新 */}
+
           <RadioGroup
             row
             value={order}
             onChange={(e) => setOrder(e.target.value)}
           >
-            {/* control={<Radio />}を指定するとラジオボタンになる
-					sx={}はerror.orderがtrue（＝未選択）なら文字を赤くする */}
             <FormControlLabel
               value="先行"
               control={<Radio />}
@@ -188,7 +170,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
             />
           </RadioGroup>
         </Box>
-        {/* 値が変わったときsetMemoを更新 */}
         <TextField
           label="メモ"
           variant="outlined"
@@ -219,10 +200,6 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
           </Button>
         </Stack>
       </Box>
-      {/* <Box sx={{ m: 2 }}>
-        <Typography>勝利数：{winCount}</Typography>
-        <Typography>敗北数：{loseCount}</Typography>
-      </Box> */}
     </Box>
   );
 };

@@ -27,7 +27,6 @@ const CLASS_OPTIONS = [
   "ネメシス",
 ];
 
-// props：全対戦データ(matches)・選択中のデッキId（selectDeckId）
 const MatchHistory = ({ matches, selectDeckId, onDeleteMatch, onUpdateMatch }) => {
   const [selectedClass, setSelectedClass] = useState("all");
   const [editMatchId, setEditMatchId] = useState(null);
@@ -66,7 +65,6 @@ const MatchHistory = ({ matches, selectDeckId, onDeleteMatch, onUpdateMatch }) =
   const deckMatches = uniqueMatches.filter(
     (match) => match.deckId === selectDeckId
   );
-  // 選択中のデッキIdに一致するデッキの戦績だけを抽出する
   const filteredMatches = deckMatches
     .filter(
       (match) => selectedClass === "all" || match.opponentDeck === selectedClass

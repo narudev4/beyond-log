@@ -1,4 +1,3 @@
-// app/not-found.tsx
 "use client";
 
 import { Box, Button, Typography } from "@mui/material";
@@ -12,7 +11,7 @@ export default function NotFound() {
       minHeight="100vh"
       justifyContent="center"
       alignItems="center"
-      sx={{ minHeight: "calc(100vh - 40px)"}} // フッターの高さ分
+      sx={{ minHeight: "calc(100vh - 40px)"}}
     >
       <Typography variant="h3" gutterBottom>
         404 - ページが見つかりません
