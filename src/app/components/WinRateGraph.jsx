@@ -110,7 +110,10 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
         グラフ
       </Typography>
       <Grid container columns={12} sx={{ pt: 5 }}>
-        <Grid size={{ xs: 12, md: 4 }} sx={{ width: "100%", height: 220, mb:"40px" }}>
+        <Grid
+          size={{ xs: 12, md: 4 }}
+          sx={{ width: "100%", height: 220, mb: "40px" }}
+        >
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -153,69 +156,69 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
           </Typography>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
-          <Typography sx={{textAlign: "center"}}>分布</Typography>
-					<Box sx={{ width: "100%", height: 250, mb:"20px"}}>
-						<ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                fill="#8884d8"
-                startAngle={90}
-                endAngle={-270}
-                labelLine={false}
-                label={({ percent, x, y, index }) =>
-                  `${(percent * 100).toFixed(0)}%`
-                }
-              >
-                {pieData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={CLASS_COLORS[entry.name] || "#8884d8"}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-					</Box>
+          <Typography sx={{ textAlign: "center" }}>分布</Typography>
+          <Box sx={{ width: "100%", height: 250, mb: "20px" }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={70}
+                  fill="#8884d8"
+                  startAngle={90}
+                  endAngle={-270}
+                  labelLine={false}
+                  label={({ percent, x, y, index }) =>
+                    `${(percent * 100).toFixed(0)}%`
+                  }
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={CLASS_COLORS[entry.name] || "#8884d8"}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </Box>
         </Grid>
 
         <Grid
           size={{ xs: 12, md: 4 }}
           sx={{
-						display: "flex",
+            display: "flex",
             justifyContent: "center",
             alignItems: "center",
-						height: 250,
-						pt: 2,
+            height: 250,
+            pt: 2,
           }}
-					>
-          <Box sx={{mb :"20px"}}>
+        >
+          <Box sx={{ mb: "20px" }}>
             {classWinRate.map(({ name, winRate }) => (
-							<Box
-							key={name}
-							sx={{
-								display: "flex",
-								alignItems: "center",
-								mb: 1,
-							}}
+              <Box
+                key={name}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 1,
+                }}
               >
                 <Box
                   sx={{
-										width: 12,
+                    width: 12,
                     height: 12,
                     bgcolor: CLASS_COLORS[name] || "#ccc",
                     mr: 1,
                   }}
-									/>
+                />
                 <Typography variant="body1" sx={{ mr: 1 }}>
-                対 {name}：
+                  対 {name}：
                 </Typography>
                 <Typography variant="body2" fontWeight="bold">
                   {winRate}%

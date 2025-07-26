@@ -4,14 +4,17 @@
 シンプルなUIで、対戦の傾向分析に役立ちます。
 
 ## 主な機能
-- デッキ作成（名前）
-- 対戦記録 (勝敗・先行後攻・対戦相手デッキ・メモ)
-- 勝率グラフ (円グラフ・相性リスト)
-- Googleログイン対応 (Firebase)
+- デッキ作成（デッキ名・クラスを入力して登録）
+- 対戦記録 (勝敗・先行/後攻・相手デッキ・メモを記録)
+- 勝率グラフ表示（先攻/後攻勝率・相手デッキ別の勝率を円グラフとリストで可視化）
+- Firebaseを用いたGoogleログインによるユーザー認証
 
 ## スクリーンショット
-![アプリのスクリーンショット](/screenshot.png)
-
+![PCスクリーンショット](/screenshot.png)
+![スマホ(デッキ作成画面)](/DeckPanel.png)
+![スマホ(対戦入力フォーム)](/MatchForm.png)
+![スマホ(対戦履歴)](/MatchHistory.png)
+![スマホ(グラフ)](/WinRateGraph.png)
 
 ## 使用技術
 - JavaScript
@@ -22,9 +25,9 @@
 - Recharts
 
 ## 今後の展望
-- TypeScriptによる再構築
+- TypeScriptへの移行（保守性と開発効率の向上）
 - Twitterログイン・Twitter戦績共有
-- スマホアプリ化(React Native)
+- React Nativeによるスマホアプリ化（モバイルでの利便性強化）
 
 # リンク
-デプロイ後追記
+https://beyond-log.vercel.app/
