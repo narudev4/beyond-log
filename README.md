@@ -10,11 +10,11 @@
 - Firebaseを用いたGoogleログインによるユーザー認証
 
 ## スクリーンショット
-![PCスクリーンショット](/screenshot.png)
-![スマホ(デッキ作成画面)](/DeckPanel.png)
-![スマホ(対戦入力フォーム)](/MatchForm.png)
-![スマホ(対戦履歴)](/MatchHistory.png)
-![スマホ(グラフ)](/WinRateGraph.png)
+![PCスクリーンショット](https://github.com/Nalu420/SVWB_WinRate/blob/main/public/PCscreenshot.png?raw=true)
+![スマホ(デッキ作成画面)](https://github.com/Nalu420/SVWB_WinRate/blob/main/public/DeckPanel.png?raw=true)
+![スマホ(対戦入力フォーム)](https://github.com/Nalu420/SVWB_WinRate/blob/main/public/MatchForm.png?raw=true)
+![スマホ(対戦履歴)](https://github.com/Nalu420/SVWB_WinRate/blob/main/public/MatchHistory.png?raw=true)
+![スマホ(グラフ)](https://github.com/Nalu420/SVWB_WinRate/blob/main/public/WinRateGraph.png?raw=true)
 
 ## 使用技術
 - JavaScript
