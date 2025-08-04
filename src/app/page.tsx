@@ -4,7 +4,6 @@ import { Box, Typography, Button, Stack } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { loginWithGoogle } from "./lib/firebaseAuth";
-import logo from "../../public/logo.png";
 import { auth } from "./lib/firebase";
 
 const HomePage = () => {
@@ -23,7 +22,13 @@ const HomePage = () => {
         textAlign: "center",
       }}
     >
-      <Image src={logo} alt="サイトロゴ" width={350} />
+      <Image
+        src="/logo.png"
+        alt="Logo"
+        width={400}
+        height={200}
+        priority
+      />
 
       <Typography variant="h6" mt={0}>
         シャドウバースの対戦記録を簡単に管理

@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 
 
 const Footer = () => {
-	const pathname = usePathname();
-	const isFixed = pathname === "/terms" || pathname === "/contact";
+	const pathname:string = usePathname();
+	const isFixed:boolean = pathname === "/terms" || pathname === "/contact";
   return (
     <Box
       component="footer"
