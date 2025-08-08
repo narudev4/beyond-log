@@ -70,10 +70,16 @@ const calculateWinRateByClass = (matches) => {
     if (isWin) result[cls].win += 1;
   });
   return CLASS_ORDER.map((cls) => {
-    const data = result[cls];
+    const data = result[cls] || { win: 0, total: 0 };
+    const win = data.win ?? 0;
+    const total = data.total ?? 0;
+    const lose = total - win;
+    const winRate = total === 0 ? 0 : Math.round((win / total) * 100);
     return {
       name: cls,
-      winRate: data ? Math.round((data.win / data.total) * 100) : 0,
+      win,
+      lose,
+      winRate,
     };
   });
 };
@@ -200,7 +206,7 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
           }}
         >
           <Box sx={{ mb: "20px" }}>
-            {classWinRate.map(({ name, winRate }) => (
+            {classWinRate.map(({ name, winRate, win, lose }) => (
               <Box
                 key={name}
                 sx={{
@@ -220,8 +226,11 @@ const WinRateGraph = ({ matches, selectDeckId }) => {
                 <Typography variant="body1" sx={{ mr: 1 }}>
                   対 {name}：
                 </Typography>
-                <Typography variant="body2" fontWeight="bold">
+                <Typography variant="body2" fontWeight="bold" sx={{ mr:2 }}>
                   {winRate}%
+                </Typography >
+								<Typography variant="body2">
+                  {win}勝 {lose}敗
                 </Typography>
               </Box>
             ))}
