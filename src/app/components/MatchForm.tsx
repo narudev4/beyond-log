@@ -12,7 +12,7 @@ import {
   Radio,
   Stack,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../lib/firebase";
 import type { SelectChangeEvent } from "@mui/material/Select";
@@ -54,18 +54,18 @@ const MatchForm = ({
     deck: false,
   });
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    calculateWinLose(data);
-  }, [selectDeckId]);
-
-  const calculateWinLose = (matchArray: Match[]) => {
+  const calculateWinLose = useCallback((matchArray: Match[]) => {
     const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
     const wins = filtered.filter((m) => m.result === "win").length;
     const loses = filtered.filter((m) => m.result === "lose").length;
     if (wins !== winCount) setWinCount(wins);
     if (loses !== loseCount) setLoseCount(loses);
-  };
+  },[selectDeckId, winCount, loseCount]);
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    calculateWinLose(data);
+  }, [calculateWinLose]);
 
   const handleClassChange = (e: SelectChangeEvent<string>) => {
     setSelectedClass(e.target.value as ClassName);
@@ -124,7 +124,7 @@ const MatchForm = ({
       calculateWinLose(updated);
     } catch (error) {
       console.error("Firestoreへの保存に失敗:", error);
-			alert("保存に失敗しました");
+      alert("保存に失敗しました");
     }
   };
 
@@ -159,11 +159,7 @@ const MatchForm = ({
           </Select>
         </FormControl>
         <Box>
-          <RadioGroup
-            row
-            value={order}
-            onChange={handleOrderChange}
-          >
+          <RadioGroup row value={order} onChange={handleOrderChange}>
             <FormControlLabel
               value="先行"
               control={<Radio />}
@@ -177,11 +173,7 @@ const MatchForm = ({
               sx={error.order ? { color: "red" } : {}}
             />
           </RadioGroup>
-          <RadioGroup
-            row
-            value={result}
-            onChange={handleResultChange}
-          >
+          <RadioGroup row value={result} onChange={handleResultChange}>
             <FormControlLabel
               value="勝利"
               control={<Radio />}
