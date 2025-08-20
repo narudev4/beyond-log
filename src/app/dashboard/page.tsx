@@ -1,19 +1,57 @@
 "use client";
+
 import { Box, Grid, Typography } from "@mui/material";
+
 import DeckPanel from "../components/DeckPanel";
 import WinRateGraph from "../components/WinRateGraph";
 import MatchForm from "../components/MatchForm";
-import { useEffect, useState } from "react";
 import MatchHistory from "../components/MatchHistory";
-import { onAuthStateChanged } from "firebase/auth";
+
+import { useEffect, useState } from "react";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { auth, db } from "../lib/firebase";
-import { addDoc, collection } from "firebase/firestore";
-import { query, where, getDocs } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  type Timestamp,
+} from "firebase/firestore";
+
+import type { ClassName, Match } from "@/types/domain";
 
 const STORAGE_KEY = "matchResult";
 
+type MatchDoc = Omit<Match, "id" | "createdAt"> & {
+  userId: string;
+  createdAt?: Timestamp | Date;
+};
+type UpdateFromHistory = {
+  id: string;
+  opponentDeck?: ClassName | null;
+  wentFirst?: boolean;
+  result?: Match["result"];
+  memo?: string;
+  date?: string;
+};
+
+const toMatch = (docId: string, d: MatchDoc): Match => ({
+  id: docId,
+  deckId: d.deckId,
+  opponentDeck: d.opponentDeck,
+  wentFirst: d.wentFirst,
+  result: d.result,
+  memo: d.memo,
+  date: d.date,
+  createdAt: d.createdAt instanceof Date ? d.createdAt : undefined,
+});
+
 export default function DashboardPage() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
+  const [selectDeckId, setSelectDeckId] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -21,14 +59,14 @@ export default function DashboardPage() {
       if (user) {
         const localMatches = JSON.parse(
           localStorage.getItem(STORAGE_KEY) || "[]"
-        );
+        ) as Match[];
         if (
           localMatches.length > 0 &&
           !localStorage.getItem("migratedToFirestore")
         ) {
           for (const match of localMatches) {
             try {
-              const { id, ...rest } = match;
+              const { id: _drop, ...rest } = match;
               await addDoc(collection(db, "matches"), {
                 ...rest,
                 userId: user.uid,
@@ -47,68 +85,72 @@ export default function DashboardPage() {
             where("userId", "==", user.uid)
           );
           const querySnapshot = await getDocs(q);
-          const fetchedMatches = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          const uniqueMatches = Array.from(
+          const fetchedMatches = querySnapshot.docs.map((doc) =>
+            toMatch(doc.id, doc.data() as MatchDoc)
+          );
+          const unique = Array.from(
             new Map(fetchedMatches.map((m) => [m.id, m])).values()
           );
-
-          setAllMatches(fetchedMatches);
-          setMatches(fetchedMatches);
+          setAllMatches(unique);
+          setMatches(unique);
         } catch (err) {
           console.error("Firestoreからの取得に失敗", err);
         }
+      } else {
+        const saved = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) || "[]"
+        ) as Match[];
+        setAllMatches(saved);
+        setMatches(saved);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (!user) {
-      const savedMatches = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
-      setMatches(savedMatches);
-      setAllMatches(savedMatches);
-    }
-  }, [user]);
-
-  const [matches, setMatches] = useState([]);
-  const [allMatches, setAllMatches] = useState([]);
-  const [selectDeckId, setSelectDeckId] = useState(null);
-
-  const handleDeckChange = (deckId) => {
+  const handleDeckChange = (deckId: string | null) => {
     const filtered = allMatches.filter((m) => m.deckId === deckId);
     setMatches(filtered);
   };
-  const handleResetMatches = (deckId) => {
+  const handleResetMatches = (deckId: string) => {
     const filtered = allMatches.filter((m) => m.deckId !== deckId);
     const updated = JSON.stringify(filtered);
     localStorage.setItem(STORAGE_KEY, updated);
     setAllMatches(filtered);
     setMatches([]);
   };
-  const handleDeleteMatches = (id) => {
+  const handleDeleteMatches = (id: string) => {
     const newMatches = matches.filter((m) => m.id !== id);
     setMatches(newMatches);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newMatches));
     setAllMatches(newMatches);
   };
 
-  const handleUpdateMatch = (updatedMatch) => {
+  const handleUpdateMatch = (update: UpdateFromHistory) => {
     setMatches((prev) =>
-      prev.map((m) =>
-        m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m
-      )
+      prev.map((m) => {
+        if (m.id !== update.id) return m;
+        const { opponentDeck, ...rest } = update;
+        return {
+          ...m,
+          ...(opponentDeck == null ? {} : { opponentDeck }), // null/undefined は無視
+          ...rest,
+        } as Match;
+      })
     );
+
     setAllMatches((prev) =>
-      prev.map((m) =>
-        m.id === updatedMatch.id ? { ...m, ...updatedMatch } : m
-      )
+      prev.map((m) => {
+        if (m.id !== update.id) return m;
+        const { opponentDeck, ...rest } = update;
+        return {
+          ...m,
+          ...(opponentDeck == null ? {} : { opponentDeck }),
+          ...rest,
+        } as Match;
+      })
     );
   };
+
   return (
     <Box
       component="main"
