@@ -1,8 +1,10 @@
 import "./global.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "beyond log",
   description: "Shadowverse Worlds Beyond 戦績記録アプリ",
   metadataBase: new URL("https://beyond-log.vercel.app/"),
@@ -30,7 +32,7 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode}) {
   return (
     <html lang="ja">
       <body>
