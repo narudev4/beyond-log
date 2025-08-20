@@ -15,37 +15,67 @@ import {
 import React, { useState, useEffect } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db, auth } from "../lib/firebase";
+import type { SelectChangeEvent } from "@mui/material/Select";
+import type { ClassName, Match } from "@/types/domain";
 
-const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
-  const [selectedClass, setSelectedClass] = useState("");
-  const [order, setOrder] = useState("");
-  const [result, setResult] = useState("");
-  const [memo, setMemo] = useState("");
+type Order = "先行" | "後攻";
+type ResultJa = "勝利" | "敗北";
+
+interface MatchFormProps {
+  selectDeckId: string | null;
+  onAddMatch: (m: Match) => void;
+  onResetMatches: (deckId: string) => void;
+}
+
+interface ErrorState {
+  selectedClass: boolean;
+  order: boolean;
+  result: boolean;
+  deck: boolean;
+}
+
+const STORAGE_KEY = "matchResult";
+
+const MatchForm = ({
+  selectDeckId,
+  onAddMatch,
+  onResetMatches,
+}: MatchFormProps) => {
+  const [selectedClass, setSelectedClass] = useState<ClassName | "">("");
+  const [order, setOrder] = useState<Order | "">("");
+  const [result, setResult] = useState<ResultJa | "">("");
+  const [memo, setMemo] = useState<string>("");
   const [winCount, setWinCount] = useState(0);
   const [loseCount, setLoseCount] = useState(0);
-  const [error, setError] = useState({
+  const [error, setError] = useState<ErrorState>({
     selectedClass: false,
     order: false,
     result: false,
     deck: false,
   });
 
-  const STORAGE_KEY = "matchResult";
-
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
     calculateWinLose(data);
   }, [selectDeckId]);
 
-  const calculateWinLose = (matchArray) => {
-  const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
-  const wins = filtered.filter((m) => m.result === "win").length;
-  const loses = filtered.filter((m) => m.result === "lose").length;
+  const calculateWinLose = (matchArray: Match[]) => {
+    const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
+    const wins = filtered.filter((m) => m.result === "win").length;
+    const loses = filtered.filter((m) => m.result === "lose").length;
+    if (wins !== winCount) setWinCount(wins);
+    if (loses !== loseCount) setLoseCount(loses);
+  };
 
-  if (wins !== winCount) setWinCount(wins);
-  if (loses !== loseCount) setLoseCount(loses);
-};
-
+  const handleClassChange = (e: SelectChangeEvent<string>) => {
+    setSelectedClass(e.target.value as ClassName);
+  };
+  const handleOrderChange = (e: SelectChangeEvent<HTMLInputElement>) => {
+    setOrder(e.target.value as Order);
+  };
+  const handleResultChange = (e: SelectChangeEvent<HTMLInputElement>) => {
+    setResult(e.target.value as ResultJa);
+  };
   const handleClick = async () => {
     const hasError = {
       selectedClass: selectedClass === "",
@@ -54,39 +84,38 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
       deck: selectDeckId === null,
     };
     setError(hasError);
+    if (Object.values(hasError).some(Boolean)) return;
 
-    if (Object.values(hasError).some((v) => v)) return;
     const currentUser = auth.currentUser;
     try {
-      const docRef = await addDoc(collection(db, "matches"), {
+      const payload = {
         userId: currentUser?.uid || "guest",
-        deckId: selectDeckId,
-        opponentDeck: selectedClass,
+        deckId: selectDeckId!,
+        opponentDeck: selectedClass as ClassName,
         wentFirst: order === "先行",
-        result: result === "勝利" ? "win" : "lose",
+        result: result === "勝利" ? "win" : ("lose" as Match["result"]),
         memo,
         date: new Date().toISOString().slice(0, 10),
         createdAt: new Date(),
-      });
+      };
+      const docRef = await addDoc(collection(db, "matches"), payload);
 
-      const matchData = {
+      const matchData: Match = {
         id: docRef.id,
-        deckId: selectDeckId,
-        opponentDeck: selectedClass,
-        wentFirst: order === "先行",
-        result: result === "勝利" ? "win" : "lose",
-        memo,
-        date: new Date().toISOString().slice(0, 10),
-        createdAt: new Date(),
+        deckId: payload.deckId,
+        opponentDeck: payload.opponentDeck,
+        wentFirst: payload.wentFirst,
+        result: payload.result,
+        memo: payload.memo,
+        date: payload.date,
+        createdAt: payload.createdAt as Date,
       };
 
       const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       const updated = [...prev, matchData];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 
-      if (typeof onAddMatch === "function") {
-        onAddMatch(matchData);
-      }
+      onAddMatch(matchData);
 
       setSelectedClass("");
       setOrder("");
@@ -95,6 +124,7 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
       calculateWinLose(updated);
     } catch (error) {
       console.error("Firestoreへの保存に失敗:", error);
+			alert("保存に失敗しました");
     }
   };
 
@@ -110,18 +140,15 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-
         <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
-
           <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
 
           <Select
             labelId="class-select-label"
             label="対戦したクラスを選択"
             value={selectedClass}
-            onChange={(e) => setSelectedClass(e.target.value)}
+            onChange={handleClassChange}
           >
-
             <MenuItem value="エルフ">エルフ</MenuItem>
             <MenuItem value="ロイヤル">ロイヤル</MenuItem>
             <MenuItem value="ウィッチ">ウィッチ</MenuItem>
@@ -132,11 +159,10 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
           </Select>
         </FormControl>
         <Box>
-
           <RadioGroup
             row
             value={order}
-            onChange={(e) => setOrder(e.target.value)}
+            onChange={handleOrderChange}
           >
             <FormControlLabel
               value="先行"
@@ -154,7 +180,7 @@ const MatchForm = ({ selectDeckId, onAddMatch, onResetMatches }) => {
           <RadioGroup
             row
             value={result}
-            onChange={(e) => setResult(e.target.value)}
+            onChange={handleResultChange}
           >
             <FormControlLabel
               value="勝利"

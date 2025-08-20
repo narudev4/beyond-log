@@ -23,4 +23,5 @@ export interface Match {
   result: Result;
   memo?: string;
   date: string;
+	createdAt?: Date;
 }
