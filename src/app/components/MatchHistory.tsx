@@ -1,4 +1,3 @@
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Grid,
@@ -18,6 +17,7 @@ import { useState } from "react";
 import { updateMatchInFirestore } from "../lib/firebaseUtils";
 import { ClassName, Match, Result } from "@/types/domain";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { auth } from "../lib/firebase";
 
 type EditData = {
   opponentDeck: ClassName | null;
@@ -61,23 +61,26 @@ const MatchHistory = ({
   const handleEdit = (match: Match) => {
     setEditMatchId(match.id);
     setEditData({
-      opponentDeck: match.opponentDeck ?? "",
+      opponentDeck: match.opponentDeck ?? null,
       wentFirst: match.wentFirst,
       result: match.result,
       memo: match.memo ?? "",
     });
   };
 
+	const STORAGE_KEY = "matchResult";
+
   const handleSave = async (matchId: string) => {
     try {
-      const payload: Partial<EditData> = {
-        opponentDeck: editData.opponentDeck || undefined,
-        wentFirst: editData.wentFirst,
-        result: editData.result,
-        memo: editData.memo || undefined,
-      };
-      await updateMatchInFirestore(matchId, editData);
-      onUpdateMatch({ id: matchId, ...editData });
+			if(auth.currentUser){
+				await updateMatchInFirestore(matchId,editData)
+			}
+			onUpdateMatch({ id: matchId, ...editData } as any);
+			if(!auth.currentUser){
+				const prev: Match[] = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")
+				const updated = prev.map((m) => m.id === matchId ? ({ ...m, ...editData} as Match) : m );
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+			}
       setEditMatchId(null);
     } catch (err) {
       console.error("Firestore更新エラー:", err);

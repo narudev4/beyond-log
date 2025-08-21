@@ -54,13 +54,16 @@ const MatchForm = ({
     deck: false,
   });
 
-  const calculateWinLose = useCallback((matchArray: Match[]) => {
-    const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
-    const wins = filtered.filter((m) => m.result === "win").length;
-    const loses = filtered.filter((m) => m.result === "lose").length;
-    if (wins !== winCount) setWinCount(wins);
-    if (loses !== loseCount) setLoseCount(loses);
-  },[selectDeckId, winCount, loseCount]);
+  const calculateWinLose = useCallback(
+    (matchArray: Match[]) => {
+      const filtered = matchArray.filter((m) => m.deckId === selectDeckId);
+      const wins = filtered.filter((m) => m.result === "win").length;
+      const loses = filtered.filter((m) => m.result === "lose").length;
+      if (wins !== winCount) setWinCount(wins);
+      if (loses !== loseCount) setLoseCount(loses);
+    },
+    [selectDeckId, winCount, loseCount]
+  );
 
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -87,36 +90,51 @@ const MatchForm = ({
     if (Object.values(hasError).some(Boolean)) return;
 
     const currentUser = auth.currentUser;
-    try {
-      const payload = {
-        userId: currentUser?.uid || "guest",
+
+    if (!currentUser) {
+      const matchData: Match = {
+        id: Date.now().toString(),
         deckId: selectDeckId!,
         opponentDeck: selectedClass as ClassName,
         wentFirst: order === "先行",
-        result: result === "勝利" ? "win" : ("lose" as Match["result"]),
+        result: (result === "勝利" ? "win" : "lose") as Match["result"],
+        memo,
+        date: new Date().toISOString().slice(0, 10),
+        createdAt: new Date(),
+      };
+      const prev: Match[] = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+      );
+      const updated = [...prev, matchData];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      onAddMatch(matchData);
+      setSelectedClass("");
+      setOrder("");
+      setResult("");
+      setMemo("");
+      calculateWinLose(updated);
+      return;
+    }
+
+    try {
+      const payload = {
+        userId: currentUser.uid,
+        deckId: selectDeckId!,
+        opponentDeck: selectedClass as ClassName,
+        wentFirst: order === "先行",
+        result: (result === "勝利" ? "win" : "lose") as Match["result"],
         memo,
         date: new Date().toISOString().slice(0, 10),
         createdAt: new Date(),
       };
       const docRef = await addDoc(collection(db, "matches"), payload);
-
-      const matchData: Match = {
-        id: docRef.id,
-        deckId: payload.deckId,
-        opponentDeck: payload.opponentDeck,
-        wentFirst: payload.wentFirst,
-        result: payload.result,
-        memo: payload.memo,
-        date: payload.date,
-        createdAt: payload.createdAt as Date,
-      };
-
-      const prev = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      const matchData: Match = { id: docRef.id, ...payload };
+      const prev: Match[] = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "[]"
+      );
       const updated = [...prev, matchData];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-
       onAddMatch(matchData);
-
       setSelectedClass("");
       setOrder("");
       setResult("");
@@ -142,7 +160,6 @@ const MatchForm = ({
       >
         <FormControl sx={{ width: 300, m: 1 }} error={error.selectedClass}>
           <InputLabel id="class-select-label">対戦したクラスを選択</InputLabel>
-
           <Select
             labelId="class-select-label"
             label="対戦したクラスを選択"
