@@ -1,10 +1,11 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from "./firebase";
 import { doc, setDoc, getFirestore, collection, addDoc } from "firebase/firestore";
+import type { NextRouter } from "next/router";
 
 const db = getFirestore();
 
-export const loginWithGoogle = async (router) => {
+export const loginWithGoogle = async (router: NextRouter): Promise<void> => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
@@ -28,7 +29,7 @@ export const loginWithGoogle = async (router) => {
   }
 };
 
-export const logout = async () => {
+export const logout = async (): Promise<void> => {
   try {
     await signOut(auth);
   } catch (err) {
@@ -36,7 +37,13 @@ export const logout = async () => {
   }
 };
 
-export const saveDeckToFirestore = async (deckData) => {
+interface DeckData {
+	name: string;
+	class: string;
+	imageUrl?: string;
+}
+
+export const saveDeckToFirestore = async (deckData: DeckData): Promise<void> => {
   const currentUser = auth.currentUser;
   if (!currentUser) return;
 

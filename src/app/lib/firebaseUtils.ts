@@ -8,26 +8,32 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-/**
- * @param {string} userId
- * @returns {Promise<Array>}
- */
-export const fetchUserDecks = async (userId) => {
+interface Deck {
+	id: string;
+	name: string;
+	class: string;
+	imageUrl: string;
+	userId: string;
+	createdAt: Date;
+}
+
+export const fetchUserDecks = async (userId: string): Promise<Deck[]> => {
   try {
     const q = query(collection(db, "decks"), where("userId", "==", userId));
     const querySnapshot = await getDocs(q);
-    const decks = querySnapshot.docs.map((doc) => ({
+    return querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as Omit<Deck, "id">),
     }));
-    return decks;
   } catch (error) {
     console.error("デッキ取得に失敗しました:", error);
     return [];
   }
 };
 
-export const updateMatchInFirestore = async (matchId, newData) => {
+export const updateMatchInFirestore = async(
+	matchId: string, newData: Record<string, unknown>
+): Promise<void> => {
   const matchRef = doc(db, "matches", matchId);
   await updateDoc(matchRef, newData);
 };
