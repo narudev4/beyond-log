@@ -38,7 +38,7 @@
     "src/app/layout.jsx",
     "src/app/page.tsx",
     ".next/types/**/*.ts"
-, "src/app/lib/firebase.js"  ],
+, "src/app/lib/firebase.ts"  ],
   "exclude": [
     "node_modules"
   ]
