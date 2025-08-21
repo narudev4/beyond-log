@@ -1,11 +1,11 @@
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { auth } from "./firebase";
 import { doc, setDoc, getFirestore, collection, addDoc } from "firebase/firestore";
-import type { NextRouter } from "next/router";
 
+type RouterLike = { push: (href: string) => void};
 const db = getFirestore();
 
-export const loginWithGoogle = async (router: NextRouter): Promise<void> => {
+export const loginWithGoogle = async (router: RouterLike): Promise<void> => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
@@ -21,7 +21,7 @@ export const loginWithGoogle = async (router: NextRouter): Promise<void> => {
       },
       { merge: true }
     );
-    if (result.user) {
+    if (result.user && router) {
       router.push("/dashboard");
     }
   } catch (err) {

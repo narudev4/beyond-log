@@ -5,25 +5,19 @@ import {
   getDocs,
   doc,
   updateDoc,
+	type DocumentData,
+	type UpdateData,
 } from "firebase/firestore";
 import { db } from "./firebase";
-
-interface Deck {
-	id: string;
-	name: string;
-	class: string;
-	imageUrl: string;
-	userId: string;
-	createdAt: Date;
-}
+import type { Deck, Result, ClassName } from "@/types/domain"
 
 export const fetchUserDecks = async (userId: string): Promise<Deck[]> => {
   try {
     const q = query(collection(db, "decks"), where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...(doc.data() as Omit<Deck, "id">),
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as Omit<Deck, "id">),
     }));
   } catch (error) {
     console.error("デッキ取得に失敗しました:", error);
@@ -31,9 +25,16 @@ export const fetchUserDecks = async (userId: string): Promise<Deck[]> => {
   }
 };
 
+type MatchUpdate = {
+	opponentDeck?: ClassName | null;
+  wentFirst?: boolean;
+  result?: Result;
+  memo?: string;
+}
+
 export const updateMatchInFirestore = async(
-	matchId: string, newData: Record<string, unknown>
+	matchId: string, newData: MatchUpdate
 ): Promise<void> => {
   const matchRef = doc(db, "matches", matchId);
-  await updateDoc(matchRef, newData);
+  await updateDoc(matchRef, newData as UpdateData<DocumentData>);
 };
