@@ -22,7 +22,7 @@ const ContactPage = () => {
 
         <Typography variant="body2" sx={{ mt: 1 }}>
           X（旧Twitter）：
-          <Link href="https://twitter.com/your_handle" target="_blank" underline="hover">
+          <Link href="https://twitter.com/narudev4" target="_blank" underline="hover">
             @narudev4
           </Link>
         </Typography>
