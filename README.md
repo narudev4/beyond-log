@@ -25,7 +25,6 @@
 - Recharts
 
 ## 今後の展望
-- TypeScriptへの移行（保守性と開発効率の向上）
 - Twitterログイン・Twitter戦績共有
 - React Nativeによるスマホアプリ化（モバイルでの利便性強化）
 
